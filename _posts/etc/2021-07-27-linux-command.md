@@ -14,20 +14,20 @@ comments: true
 ## 디렉토리 목록 확인
 
 
-`$ ls`
-`$ ls -al` : 감춰진 파일은 .이 붙는다. a 옵션을 사용하면 해당 파일을 확인할 수 있다.
-`$ ls -l`
+`$ ls`  
+`$ ls -al` : 감춰진 파일은 .이 붙는다. a 옵션을 사용하면 해당 파일을 확인할 수 있다.  
+`$ ls -l`  
 
 ## 새 디렉토리 생성
 
-`$ mkdir [디렉토리명]`
-`$ mkdir -p [디렉토리명/디렉토리명/디렉토리명...]` : 여러 디렉토리 생성
+`$ mkdir [디렉토리명]`  
+`$ mkdir -p [디렉토리명/디렉토리명/디렉토리명...]` : 여러 디렉토리 생성  
 
 
 ## 디렉토리 이동
 
-`$ cd [디렉토리명]`
-`$ cd ..` : 부모 디렉토리로 이동
+`$ cd [디렉토리명]`  
+`$ cd ..` : 부모 디렉토리로 이동  
 
 tip) 디렉토리명이 너무 길 때, 조금만 쓰고 tab키 누르면 자동완성
 
@@ -121,8 +121,8 @@ tip) 디렉토리명이 너무 길 때, 조금만 쓰고 tab키 누르면 자동
 
 # 패키지를 설치하는 순서 (항상 이 순서를 따르는게 좋음.)
 
-\1. 패키지 목록 업데이트 (apt-get update)
-\2. 패키지 설치 (apt-get install)
+1. 패키지 목록 업데이트 (apt-get update)
+2. 패키지 설치 (apt-get install)
 
 # 다운로드
 
@@ -132,20 +132,20 @@ tip) 디렉토리명이 너무 길 때, 조금만 쓰고 tab키 누르면 자동
 
 ## 소스코드 다운로드 (git 사용)
 
-\1. git 설치
+1. git 설치
 `$ apt-get install git`
-\2. 소스코드 다운
+2. 소스코드 다운
 `$ git clone [소스코드 url] [디렉토리명] : 명시한 디렉토리에 소스코드 다운받는다.`
 
 # why CLI?
 
-\1. 순차적 실행 (using semicolon)
+1. 순차적 실행 (using semicolon)
 ex) `$ mkdir why; cd why`
 
 + 언제 유용한가?
     + 하나하나의 명령들이 1000시간이 걸린다고 할 때, 명령어 하나하나씩 치는 것과 여러개를 한번에 치는 것은 차이가 있음. (여러 개 명령어를 한 번에 치면 알아서 마지막 결과만 나타남.)
 
-\2. 파이프라인
+2. 파이프라인
 
 + 명령어의 연결
     + 어떤 프로세스의 출력을 다른 프로세스의 입력으로 . . .
@@ -157,14 +157,14 @@ ex)
 
 # IO Redirection
 
-\1. output
+1. output
 `$ ls -l > result.txt` : result.txt 확인해보면 ls -l 출력물 담겨있음.
 
-\2. error (에러 결과를 저장하려면? '2>' 를 사용한다. (standard error를 가리킴))
+2. error (에러 결과를 저장하려면? '2>' 를 사용한다. (standard error를 가리킴))
 ex) 해당 디렉토리에 rename2.txt가 없을 때
 `$ rm rename2.txt 2> error.log` : error.log에 에러 내용이 담겨있음.
 
-\3. input
+3. input
 `$ cat hello.txt` : cat의 cammand-line arguments로써 역할
 `$ cat < hello.txt` : hello.txt 내용을 standard input으로..
 `$ head -n1 < linux.txt > one.txt` : linux.txt 내용을 input, one.txt에 출력물을 저장

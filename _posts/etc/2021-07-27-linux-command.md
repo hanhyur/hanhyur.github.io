@@ -2,7 +2,7 @@
 layout: post
 date: 2021-07-27 22:00:00
 title: "Linux 터미널 명령어 모음"
-description: "리눅스 명령어"
+description: "우분투 Ubuntu"
 subject: blog
 category: [ etc ]
 tags: [ etc, post, dev contents, linux ]
@@ -132,18 +132,18 @@ tip) 디렉토리명이 너무 길 때, 조금만 쓰고 tab키 누르면 자동
 
 ## 소스코드 다운로드 (git 사용)
 
-1. git 설치
+&#49;. git 설치  
 `$ apt-get install git`
-2. 소스코드 다운
+&#50;. 소스코드 다운  
 `$ git clone [소스코드 url] [디렉토리명] : 명시한 디렉토리에 소스코드 다운받는다.`
 
 # why CLI?
 
-1. 순차적 실행 (using semicolon) 'ex) `$ mkdir why; cd why`'
+&#49;. 순차적 실행 (using semicolon) 'ex) `$ mkdir why; cd why`'
     + 언제 유용한가?
         + 하나하나의 명령들이 1000시간이 걸린다고 할 때, 명령어 하나하나씩 치는 것과 여러개를 한번에 치는 것은 차이가 있음. (여러 개 명령어를 한 번에 치면 알아서 마지막 결과만 나타남.)
 
-2. 파이프라인
+&#50;. 파이프라인
     + 명령어의 연결
         + 어떤 프로세스의 출력을 다른 프로세스의 입력으로 . . .
     + 원하는 정보가 포함되어 있는 행을 출력
@@ -155,16 +155,16 @@ ex)
 
 # IO Redirection
 
-1. output
+&#49;. output  
 `$ ls -l > result.txt` : result.txt 확인해보면 ls -l 출력물 담겨있음.
 
-2. error (에러 결과를 저장하려면? '2>' 를 사용한다. (standard error를 가리킴))
-ex) 해당 디렉토리에 rename2.txt가 없을 때
+&#50;. error (에러 결과를 저장하려면? '2>' 를 사용한다. (standard error를 가리킴))  
+ex) 해당 디렉토리에 rename2.txt가 없을 때  
 `$ rm rename2.txt 2> error.log` : error.log에 에러 내용이 담겨있음.
 
-3. input
-`$ cat hello.txt` : cat의 cammand-line arguments로써 역할
-`$ cat < hello.txt` : hello.txt 내용을 standard input으로..
+&#51;. input  
+`$ cat hello.txt` : cat의 cammand-line arguments로써 역할  
+`$ cat < hello.txt` : hello.txt 내용을 standard input으로..  
 `$ head -n1 < linux.txt > one.txt` : linux.txt 내용을 input, one.txt에 출력물을 저장
 
 # 디렉토리 구조
@@ -335,217 +335,269 @@ bash가 시작되었을 때 실행됨.
   <tr>
     <td> -<br> file : -,<br> directory : d </td>
     <td> [owner의 권한]<br>rw-<br>[group의 권한]<br>rw-<br>[other의 권한]<br>r-- </td>
-  </tr>
-  <tr>
-    <td>  </td>
-    <td>  </td>
-  </tr>
-  <tr>
-    <td> int read(byte[ ] b, int off, int len) </td>
-    <td> void write(byte[ ] b, int off, int len) </td>
+    <td> gracenam </td>
+    <td> gracenam </td>
   </tr>
 </table>
 
 <br/>
-(1) type	(2) access mode (r: read, w: write, x: execute)	(3) owner	(4) group
--
-file: -, directory: d
-[owenr 권한]
-rw-	
-[group의 권한]
-rw-	
-[other의 권한 (!owner && !group)]
-r--	egoing	egoing
-권한 변경 (chmod)
-u: owner
-g: group
-o: other (not owner, not group)
-a: all
 
-$ chmod o-r perm.txt
+## 권한 변경 (chmod)
+
+u: owner  
+g: group  
+o: other (not owner, not group)  
+a: all  
+
+`$ chmod o-r perm.txt`  
 : perm.txt파일의 other read 권한 삭제
 
-$ chmod o+r perm.txt
+`$ chmod o+r perm.txt`  
 : perm.txt파일의 other read 권한 허가
 
-execute
-$ nano hi-machine.sh
+## execute
 
+`$ nano hi-machine.sh`
+
+```
 #!/bin/bash
 echo 'hi hi hi hi'
-파일 실행 시도 1
-$ ./hi-machine.sh -> 허가 거부 뜸
+```
 
-파일 실행 시도 2
-$ /bin/bash hi-machine.sh -> 실행됨
+파일 실행 시도 1  
+`$ ./hi-machine.sh` -> 허가 거부 뜸
 
-owner 실행 권한 추가하기
-$ chmod u+x hi-mashine.sh -> 해당 파일 초록색으로 표시됨
+파일 실행 시도 2  
+`$ /bin/bash hi-machine.sh` -> 실행됨
 
-파일 실행 시도 3
-$ ./hi-machine.sh -> 실행됨
+owner 실행 권한 추가하기  
+`$ chmod u+x hi-mashine.sh` -> 해당 파일 초록색으로 표시됨
 
-directory
-r 모드: 해당 디렉토리에 소속된 파일이나 디렉토리를 열람할 수 있는지?
-w 모드: 해당 디렉토리 내부를 수정 할 수 있는지? (파일 생성, 수정, 삭제, 파일이름 변경 등)
-x 모드: 해당 디렉토리로 들어갈 수 있는지?
-chmod 명령어의 -R 옵션: 재귀적으로 해당 디렉토리 안에 있는 것들의 mode를 모두 바꾼다.
-Numerical permissions
-숫자	의미	영문으로 표현
-0	none	---
-1	execute only	--x
-2	write only	-w-
-3	write and execute	-wx
-4	read only	r--
-5	read and execute	r-x
-6	read and write	rw-
-7	read, write and execute	rwx
+파일 실행 시도 3  
+`$ ./hi-machine.sh` -> 실행됨
+
+## directory
+
++ r 모드: 해당 디렉토리에 소속된 파일이나 디렉토리를 열람할 수 있는지?
++ w 모드: 해당 디렉토리 내부를 수정 할 수 있는지? (파일 생성, 수정, 삭제, 파일이름 변경 등)
++ x 모드: 해당 디렉토리로 들어갈 수 있는지?
++ chmod 명령어의 -R 옵션: 재귀적으로 해당 디렉토리 안에 있는 것들의 mode를 모두 바꾼다.
+
+## Numerical permissions
+
+<table align="center">
+  <tr style="text-align:center; background-color:#3a3c42; color:white">
+    <td> 숫자 </td>
+    <td> 의미 </td>
+    <td> 영문 표현 </td>
+  </tr>
+  <tr>
+    <td> 0 </td>
+    <td> none </td>
+    <td> --- </td>
+  </tr>
+  <tr>
+    <td> 1 </td>
+    <td> execute only </td>
+    <td> --x </td>
+  </tr>
+  <tr>
+    <td> 2 </td>
+    <td> write only </td>
+    <td> -w- </td>
+  </tr>
+  <tr>
+    <td> 3 </td>
+    <td> write and execute </td>
+    <td> -wx </td>
+  </tr>
+  <tr>
+    <td> 4 </td>
+    <td> read only </td>
+    <td> r-- </td>
+  </tr>
+  <tr>
+    <td> 5 </td>
+    <td> read and execute </td>
+    <td> r-x </td>
+  </tr>
+  <tr>
+    <td> 6 </td>
+    <td> read and write </td>
+    <td> rw- </td>
+  </tr>
+  <tr>
+    <td> 7 </td>
+    <td> read, write and execute </td>
+    <td> rwx </td>
+  </tr>
+</table>
+
+<br>
 ex) $ chmod 111 perm.txt -> --x--x--x로 변경됨.
 
-'=' 사용
-추가/삭제 개념이 아니라 아예 바뀌는 것
+# '=' 사용
 
-$ chmod a=r perm.txt -> owner, group, other read만 가능
-$ chmod a= perm.txt -> owner, group, other 아무 권한 없음.
+추가/삭제 개념이 아니라 <b>아예 바뀌는 것</b>
 
+`$ chmod a=r perm.txt` -> owner, group, other read만 가능  
+`$ chmod a= perm.txt` -> owner, group, other 아무 권한 없음.
 
-IP 주소 확인
-$ ip addr : 컴퓨터 IP 확인 (private ip)
-$ curl ipinfo.io/ip : ipinfo.io/ip 입장에서 접속된 ip (public ip)
+# IP 주소 확인
 
+`$ ip addr` : 컴퓨터 IP 확인 (private ip)  
+`$ curl ipinfo.io/ip` : ipinfo.io/ip 입장에서 접속된 ip (public ip)
 
-웹서버
-웹서버 설치 (apache2)
-$ sudo apt-get update
-$ sudo apt-get install apache2
+# 웹서버
 
-웹서버 시작, 중지, 재시작
-$ sudo service apache2 start
-$ sudo service apache2 stop
-$ sudo service apache2 restart
+## 웹서버 설치 (apache2)
 
-쉘을 통해 웹서버 접속 (쉘에서 웹브라우징) : elinks 사용
-$ sudo apt-get install elinks
-$ elinks http://10.0.2.15/ (컴퓨터 IP 입력) -> local 서버 접속
+`$ sudo apt-get update`  
+`$ sudo apt-get install apache2`
 
-웹서버의 설정
-/etc/apache2 에 아파치 설정파일 있음. (apache2.conf)
-웹서버가 어떤 storage에서 파일을 찾을 것인가는 설정파일에서 확인.
-default는 /var/www/html 인데, 설정 바꿔서 변경시킬 수 있음.
+## 웹서버 시작, 중지, 재시작
+
+`$ sudo service apache2 start`  
+`$ sudo service apache2 stop`  
+`$ sudo service apache2 restart`
+
+## 쉘을 통해 웹서버 접속 (쉘에서 웹브라우징) : elinks 사용
+
+`$ sudo apt-get install elinks`  
+`$ elinks http://10.0.2.15/` (컴퓨터 IP 입력) -> local 서버 접속
+
+## 웹서버의 설정
+
+/etc/apache2 에 아파치 설정파일 있음. (apache2.conf)  
+웹서버가 어떤 storage에서 파일을 찾을 것인가는 설정파일에서 확인.  
+default는 /var/www/html 인데, 설정 바꿔서 변경시킬 수 있음.  
 이때 /var/www/html를 document root라고 부른다. (웹페이지를 찾는 최상위 디렉토리)
 
-웹서버의 로그 확인
+## 웹서버의 로그 확인
 /etc/apache2/sites-enabled/000-default.conf 가보면 로그는 어디에 기록할지 명시해둔 부분이 있다. (/var/log/apache2)
 
-access.log: 누군가가 웹서버에 접속할 때마다 기록이 남겨짐.
+access.log: 누군가가 웹서버에 접속할 때마다 기록이 남겨짐.  
 error.log: 에러 로그 확인 가능
 
-실시간으로 확인하려면?
-$ tail -f /var/log/apache2/access.log
+실시간으로 확인하려면?  
+`$ tail -f /var/log/apache2/access.log`
 
+# SSH
 
-SSH
-다른 컴퓨터를 원격제어 할 때 사용
-클라이언트를 원격접속 시도하려는 컴퓨터, 서버를 원격접속 당하는 컴퓨터라고 한다면, 클라이언트 컴퓨터에는 ssh client 프로그램이 있어야하고 서버에는 ssh server 프로그램이 있어야 한다.
-오늘날 대부분의 유닉스 계열 시스템에서는 ssh 서버가 설치되어있기 때문에 설치할 필요가 거의 없다.
-원격 접속 시도
-$ ssh 계정명@접속아이피
++ 다른 컴퓨터를 원격제어 할 때 사용
++ 클라이언트를 원격접속 시도하려는 컴퓨터, 서버를 원격접속 당하는 컴퓨터라고 한다면, 클라이언트 컴퓨터에는 ssh client 프로그램이 있어야하고 서버에는 ssh server 프로그램이 있어야 한다.
++ 오늘날 대부분의 유닉스 계열 시스템에서는 ssh 서버가 설치되어있기 때문에 설치할 필요가 거의 없다.
++ 원격 접속 시도
+`$ ssh 계정명@접속아이피`  
 (처음 접속하면 진짜 접속할 건지 물어보는데 yes 하면 됨.)
-포트번호와 함께 접속 시도
-$ ssh -p 포트번호 계정명@접속아이피
-ssh 심화수업 - 비밀번호 입력없이 로그인하기
-접속을 시도하는 컴퓨터: 내 컴퓨터
++ 포트번호와 함께 접속 시도
+`$ ssh -p 포트번호 계정명@접속아이피`
+
+## ssh 심화수업 - 비밀번호 입력없이 로그인하기
+
+접속을 시도하는 컴퓨터: 내 컴퓨터  
 접속 대상이 되는 컴퓨터: 원격 컴퓨터
 
 원격 컴퓨터에 내 컴퓨터의 공개키를 저장해두면, 원격 컴퓨터에 로그인 없이 (비밀번호 입력없이/인증 없이) 로그인 가능
 
-어떤 컴퓨터가 인증된 컴퓨터?
+어떤 컴퓨터가 인증된 컴퓨터?  
 원격 컴퓨터의 ~/.ssh/authorized_keys 파일에 들어있는 키 목록을 보고 판단한다. (authorized_keys 파일은 있을 수도 있고 없을 수도 있음.)
 
+<b>원격 컴퓨터에 내 컴퓨터를 인증시키는 방법</b>
 
-원격 컴퓨터에 내 컴퓨터를 인증시키는 방법
+&#49;. ssh 공개키 비밀키 만들기 [내 컴퓨터에서 실행]
+    `$ ssh-keygen`  
+    `Q. Enter file in which to save the key?` : (저장되는 위치) 엔터  
+    `Q. Enter passphrase` : 비밀번호 쓰려면 입력하고 아니면 그냥 엔터  
+    ~/.ssh 들어가보면 id_rsa(ssh private key), id_rsa.pub(ssh public key)가 있음. (id_rsa는 절대로 비공개)
 
-ssh 공개키 비밀키 만들기 [내 컴퓨터에서 실행]
-$ ssh-keygen
-Q. Enter file in which to save the key?: (저장되는 위치) 엔터
-Q. Enter passphrase: 비밀번호 쓰려면 입력하고 아니면 그냥 엔터
-~/.ssh 들어가보면 id_rsa(ssh private key), id_rsa.pub(ssh public key)가 있음. (id_rsa는 절대로 비공개)
-
-authorized_keys 파일 끝에다가 내 컴퓨터의 id_rsa.pub 내용을 붙여넣는다. (ssh-copy-id 명령어를 사용하여 안전하게 붙여넣자.) [내 컴퓨터에서 실행]
+&#50;. authorized_keys 파일 끝에다가 내 컴퓨터의 id_rsa.pub 내용을 붙여넣는다. (ssh-copy-id 명령어를 사용하여 안전하게 붙여넣자.) [내 컴퓨터에서 실행]
 -> $ ssh-copy-id (원격 컴퓨터 계정)@(원격 컴퓨터 주소)
 -> 원격 컴퓨터의 비밀번호 입력
 
-잘 붙여넣어졌는지 확인 [원격 컴퓨터에서 실행]
+&#51;. 잘 붙여넣어졌는지 확인 [원격 컴퓨터에서 실행]
 $ cat ~/.ssh/authorized_keys
 
-로그인 없이 로그인 시도 [내 컴퓨터에서 실행]
+&#52;. 로그인 없이 로그인 시도 [내 컴퓨터에서 실행]
 $ ssh (원격 컴퓨터 계정)@(원격 컴퓨터 주소)
 -> 비밀번호 입력 없이 로그인 가능
 
+# 포트 (port)
 
-포트 (port)
-default port (기본적으로 쓰도록 약속)
+default port (기본적으로 쓰도록 약속)  
 ex) 웹서버는 80, ssh 서버는 22
 
-각 서버들은 해당 포트에서 대기중이다. (listen)
-약 65000개의 포트가 있는데, 그 중에 1024개의 well-known 포트가 있다. (잘 알려진 포트)
++ 각 서버들은 해당 포트에서 대기중이다. (listen)
++ 약 65000개의 포트가 있는데, 그 중에 1024개의 well-known 포트가 있다. (잘 알려진 포트)
 
-도메인과 DNS (Domain Name System)
-사용자가 google.com 이라고 브라우저 주소창에 입력하면
-DNS 서버가 google.com 이름을 가진 IP를 찾아서 사용자 컴퓨터에 알려준다.
-사용자 컴퓨터는 그 IP 정보로 google.com에 접속
-/etc/hosts 파일: 아이피-도메인 명시해둔 것?
-ex) hosts파일에 127.0.0.1 google.com 추가하고 브라우저에 google.com 이라고 입력했을 때, 127.0.0.1 웹서버와 매칭됨.
-/etc/hosts에서 먼저 찾아보고, 찾아봤을 때 없으면, DNS 서버에서 찾고..
-만약 /etc/hosts에 있으면 DNS 서버는 관련없음.
-/etc/resolv.conf -> nameserver 적혀있음.
-$ host [도메인] -> 호스트 정보 나옴 (어떤 아이피로 연결되어 있는지)
-서브도메인
-하나의 도메인 구입으로 여러 도메인 사용할 수 있음.
+# 도메인과 DNS (Domain Name System)
+
+&#49;. 사용자가 google.com 이라고 브라우저 주소창에 입력하면
+&#50;. DNS 서버가 google.com 이름을 가진 IP를 찾아서 사용자 컴퓨터에 알려준다.
+&#51;. 사용자 컴퓨터는 그 IP 정보로 google.com에 접속
+
++ /etc/hosts 파일: 아이피-도메인 명시해둔 것?
++ ex) hosts파일에 127.0.0.1 google.com 추가하고 브라우저에 google.com 이라고 입력했을 때, 127.0.0.1 웹서버와 매칭됨.
++ /etc/hosts에서 먼저 찾아보고, 찾아봤을 때 없으면, DNS 서버에서 찾고...
++ 만약 /etc/hosts에 있으면 DNS 서버는 관련없음.
+
++ /etc/resolv.conf -> nameserver 적혀있음.
++ `$ host [도메인]` -> 호스트 정보 나옴 (어떤 아이피로 연결되어 있는지)
+
+## 서브도메인
+
+하나의 도메인 구입으로 여러 도메인 사용할 수 있음.  
 ex) admin.egoing.ga, blog.egoing.ga, news.egoing.ga
-서로 다른 아이피를 가리키게
-하나의 도메인으로 여러 사이트를 운영!
 
-rsync
-동작방법 예시
-$ mkdir src
-$ mkdir dest
++ 서로 다른 아이피를 가리키게
++ 하나의 도메인으로 여러 사이트를 운영!
 
-src 디렉토리안에 파일 생성
-$ touch test{1..10}: test1~test10까지 생성됨.
+# rsync
 
-$ rsync -a src/ dest -> src 아래 있는 파일들이 dest 폴더안으로 복사된다.
+## 동작방법 예시
+
+`$ mkdir src`  
+`$ mkdir dest`
+
+src 디렉토리안에 파일 생성  
+`$ touch test{1..10}` : test1 ~ test10까지 생성됨.
+
+`$ rsync -a src/ dest` -> src 아래 있는 파일들이 dest 폴더안으로 복사된다.  
 (a 옵션 : 아카이브 모드로 동작. 파일 뿐만 아니라 디렉토리도 복사되고, 권한과 같은 파일/디렉토리 속성이 바뀌면 반영되고, 변경사항들만 전송)
 
-dest 폴더 가서 test10 삭제
-$ rm test10
+dest 폴더 가서 test10 삭제  
+`$ rm test10`
 
-$ rsync -av(더 자세하게 출력) src/ dest 실행 -> dest안에 있던 test10 다시 생김.
+`$ rsync -av(더 자세하게 출력) src/ dest` 실행 -> dest안에 있던 test10 다시 생김.
 
 src 폴더 가서 추가 파일 생성 후, rsync 해보면 src에서 만든 파일 만이 dest 안에 생성된다.
 
-컴퓨터와 컴퓨터 사이에 전송
-$ rsync -azP ~/rsync/src/ k8805@대상아이피:~/rsync/dest
-az: 압축한다.
-P: 전송되는 상황을 progress bar로 보여준다.
+## 컴퓨터와 컴퓨터 사이에 전송
 
+`$ rsync -azP ~/rsync/src/ k8805@대상아이피:~/rsync/dest`  
++ az: 압축한다.
++ P: 전송되는 상황을 progress bar로 보여준다.
 
-암호화
-대칭적인 방식
+# 암호화
+
+## 대칭적인 방식
+
 어떤 정보를 암호화/복호화 할 때 키를 사용하는데, 암호화 했을 때와 복호화 했을 때 같은 키를 사용한다면 대칭적인방식
 
-비대칭적인 방식
-ssh-keygen으로 만든 private key, public key를 사용
-암호화 할 때에는 private key, 복호화 할 때에는 public key를 사용
-private key, public key는 짝꿍이다.
-대표 주자: RSA
-RSA 동작방식
-ssh client로 ssh server에 접속하면
-ssh server는 랜덤한 키를 생성하여 client 컴퓨터에게 준다.
-ssh client는 id_rsa 파일(private key)이 있는지 찾는다. 있으면 그 파일을 이용해서 전달 받은 랜덤키를 암호화 시킨다.
-암호화된 결과를 ssh server에게 전송
-ssh server는 authorized_keys에 저장된 공개키를 이용해서 전달받은 암호화된 파일을 복호화 한다.
-복호화된 결과가 처음에 전달한 랜덤키와 같으면 인증 성공
+## 비대칭적인 방식
+
++ ssh-keygen으로 만든 private key, public key를 사용
++ 암호화 할 때에는 private key, 복호화 할 때에는 public key를 사용
++ private key, public key는 짝꿍이다.
++ 대표 주자: RSA
+
+## RSA 동작방식
+1. ssh client로 ssh server에 접속하면
+2. ssh server는 랜덤한 키를 생성하여 client 컴퓨터에게 준다.
+3. ssh client는 id_rsa 파일(private key)이 있는지 찾는다. 있으면 그 파일을 이용해서 전달 받은 랜덤키를 암호화 시킨다.
+4. 암호화된 결과를 ssh server에게 전송
+5. ssh server는 authorized_keys에 저장된 공개키를 이용해서 전달받은 암호화된 파일을 복호화 한다.
+6. 복호화된 결과가 처음에 전달한 랜덤키와 같으면 인증 성공
 
 ---
 **Reference**

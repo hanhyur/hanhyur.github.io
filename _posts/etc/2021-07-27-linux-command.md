@@ -505,7 +505,7 @@ error.log: 에러 로그 확인 가능
 
 <b>원격 컴퓨터에 내 컴퓨터를 인증시키는 방법</b>
 
-&#49;. ssh 공개키 비밀키 만들기 [내 컴퓨터에서 실행]
+&#49;. ssh 공개키 비밀키 만들기 [내 컴퓨터에서 실행]  
     `$ ssh-keygen`  
     `Q. Enter file in which to save the key?` : (저장되는 위치) 엔터  
     `Q. Enter passphrase` : 비밀번호 쓰려면 입력하고 아니면 그냥 엔터  

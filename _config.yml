@@ -47,4 +47,4 @@ paginate_path: /page/:num
 # Excludes
 exclude: [ Gemfile, Gemfile.lock, tale.gemspec ]
 img_url: /assets/img
-category_list: [ algorithm, coding test, java, java study halle, spring, spring boot, project, cs, data structure, til, review, etc ]
+category_list: [ algorithm, coding test, java, java study halle, spring, spring boot, project, cs, data structure, kubernetes, til, review, etc ]

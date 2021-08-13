@@ -81,6 +81,7 @@ comments: true
 ---
 **Reference**
 + <https://kubetm.github.io/k8s/03-beginner-basic-resource/pod/>
++ <https://kubernetes.io/ko/docs/home/>
 
 ---
 [^1] : 파드는 고래의 무리를 의미한다고 한다.

@@ -33,7 +33,11 @@ comments: true
 + <b>Volume 공유</b>
   + 파드 안의 컨테이너들은 동일한 볼륨과 연결이 가능하다. 파일 시스템을 기반으로 서로 파일을 주고받을 수 있다.
 
+<img src="/assets/img/kubeimg/pod00.jpg" width="70%" height="auto" align="center"><br/>
+
 ## Container
+
+<img src="/assets/img/kubeimg/pod01.jpg" width="70%" height="auto" align="center"><br/>
 
 &nbsp;&nbsp;&nbsp;컨테이너에 대해서 조금 알아보자. 쿠버네티스는 컨테이너화된 워크로드와 서비스를 관리하기 위한 오픈소스 플랫폼으로, 최소 단위인 파드가 컨테이너의 그룹이다. 그렇다면 이 컨테이너란 무엇일까?
 
@@ -58,9 +62,25 @@ comments: true
 + <b>상태를 가지지 않음</b>
   + 컨테이너 실행 환경은 독립적이기 때문에 다른 컨테이너에게 영향을 주지 않는다. 도커와 같은 이미지 기반으로 컨테이너를 실행하는 경우 특정 실행 환경을 쉽게 재사용할 수 있다.
 
-## label
+## Label
 
-&nbsp;&nbsp;&nbsp;
+<img src="/assets/img/kubeimg/pod02.jpg" width="70%" height="auto" align="center"><br/>
+
+&nbsp;&nbsp;&nbsp;레이블 시스템은 쿠버네티스에서 중요한 메커니즘 중 하나이다. <b>label(레이블)</b>은 파드와 같은 오브젝트에 첨부된 키와 값의 쌍으로 오브젝트의 특성을 식별하는데 사용되어 사용자에게는 중요하지만 코어 시스템에 직접적인 의미는 없다. 그렇다면 왜 중요할까?  
+레이블로 오브젝트의 하위 집합을 선택하고, 구성하는데 사용하기 때문이다. 레이블을 이용하면 사용자가 느슨하게 결합한 방식으로 조직 구조와 시스템 오브젝트를 매핑할 수 잇으며, 클라이언트에 매핑 정보를 저장할 필요가 없다. 레이블은 오브젝트를 생성할 때 붙이거나 생성한 후 붙이거나 언제든지 수정이 가능하다.
+
+&nbsp;&nbsp;&nbsp;파드에 레이블을 부여하는 방법은 크게 2가지 인데, 하나는 label 명령을 이용하는 방법이고 다른 하나는 선언형 명령을 이용, YAML 정의서를 작성할 때 직접 레이블을 추가하는 방법이다.
+
+## Node Schedule
+
+<img src="/assets/img/kubeimg/pod03.jpg" width="70%" height="auto" align="center"><br/>
+
+&nbsp;&nbsp;&nbsp;기본적으로 사용자가 별도의 선택 없이 파드를 생성하면 쿠버네티스 마스터가 어떤 노드 위에서 실행할지 판단하여 스케줄링한다. 쿠버네티스는 클러스터링 시스템이기 때문에, 사용자가 매번 노드를 선택할 필요 없이 쿠버네티스가 파드 스케줄링을 관리한다.  
+간혹, 특정 노드(혹은 노드 그룹)를 명시적으로 선택해서 실행시켜야 할 수도 있다. 이런 경우 <b>nodeSelector</b>라는 property를 이용하여 노드를 선택할 수 있다.
+
+---
+**Reference**
++ <https://kubetm.github.io/k8s/03-beginner-basic-resource/pod/>
 
 ---
 [^1] : 파드는 고래의 무리를 의미한다고 한다.

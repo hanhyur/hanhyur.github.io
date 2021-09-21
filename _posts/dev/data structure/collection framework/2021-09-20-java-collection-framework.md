@@ -71,6 +71,245 @@ comments: true
 
 ## List Interface에 선언된 대표적인 메소드
 
+<table>
+  <tr>
+    <td><center> 메소드 </center></td>
+    <td><center> 리턴 타입 </center></td>
+    <td><center> 설 명 </center></td>
+  </tr>
+  <tr>
+    <td><center> add(E e) </center></td>
+    <td><center> boolean </center></td>
+    <td> list에 요소를 추가. </td>
+  </tr>
+  <tr>
+    <td><center> remove(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정한 객체(o)와 같은 첫 번째 객체를 삭제. </td>
+  </tr>
+  <tr>
+    <td><center> contains(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정한 객체(o)가 컬렉션에 있는지 확인<br/>있는 경우 true, 없는 경우 false. </td>
+  </tr>
+  <tr>
+    <td><center> isEmpty() </center></td>
+    <td><center> boolean </center></td>
+    <td> 현재 컬렉션에 요소가 없다면 true, 있다면 false. </td>
+  </tr>
+  <tr>
+    <td><center> equals(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정된 객체와 같은지 비교. </td>
+  </tr>
+  <tr>
+    <td><center> indexOf(Object o) </center></td>
+    <td><center> int </center></td>
+    <td> 지정된 객체가 있는 첫 번째 요소의 위치를 반환. 없을 경우 -1. </td>
+  </tr>
+  <tr>
+    <td><center> size() </center></td>
+    <td><center> int </center></td>
+    <td> 현재 컬렉션에 있는 요소의 개수를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> get(int i) </center></td>
+    <td><center> E </center></td>
+    <td> 지정된 위치에 저장된 원소를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> set(int i, E elements) </center></td>
+    <td><center> E </center></td>
+    <td> 지정된 위치에 있는 요소를 지정된 요소로 변경. </td>
+  </tr>
+  <tr>
+    <td><center> clear() </center></td>
+    <td><center> void </center></td>
+    <td> 모든 요소를 제거. </td>
+  </tr>
+</table>
+<br/>
+
+&nbsp;&nbsp;&nbsp;List를 구현하는 각 클래스들은 조금씩 특징이 다르다. 4가지 클래스를 간략하게 살펴보자.
+
+&nbsp;&nbsp;&nbsp;ArrayList는 Object[] 배열을 사용하면서 내부 구현을 통해 동적으로 관리를 한다. 우리가 흔히 쓰는 primitive 배열(int[])과 유사한 형태라고 보면 된다.  
+최상위 타입인 Object 타입으로 배열을 생성하여 사용하기 때문에 요소 접근(access elements)에서 뛰어난 성능을 보인다. 하지만 중간 요소가 삽입, 삭제가 일어나는 경우 그 뒤의 요소들은 한 칸씩 밀어야 하거나 당겨야 하기 때문에 삽입, 삭제에서는 비효율적이다.
+
+&nbsp;&nbsp;&nbsp;LinkedList는 데이터(item)와 주소로 이루어진 클래스를 만들어 서로 연결하는 방식이다. 데이터와 주소로 이루어진 클래스를 Node(노드)라고 하는데, 각 노드는 이전의 노드와 다음 노드를 연결되어있다. 즉, 객체끼리 연결한 방식으로 요소를 검색해야 할 경우 처음 노드부터 찾으려는 노드가 나올 때 까지 연결된 노드들을 모두 방문해야한다는 점에서 성능이 떨어진다. 반면에 해당 노드를 삭제, 삽입해야 할 경우 해당 노드의 링크를 끊거나 연결만 해주면 되기 때문에 삽입, 삭제에서는 매우 좋은 효율을 보인다.
+
+&nbsp;&nbsp;&nbsp;Vector는 자바에서는 자주 보이지 않는 클래스인데 기본적으로 ArrayList와 비슷하며 Object[] 배열을 사용해 요소 접근에서 빠른 성능을 보인다.  
+그렇다면 Vector는 왜 있는 것일까? 원래 Vector는 Collection Framwork가 도입되기 전부터 지원하던 클래스로 항상 '동기화'를 지원한다. 그렇다보니 멀티 쓰레드에서는 안전하지만, 단일 쓰레드에서도 동기화를 하기 때문에 ArrayList에 비해 성능이 약간 느리다.
+
+&nbsp;&nbsp;&nbsp;Stack은 쌓아 올리는 것이다. LIFO(Last in First out) 또는 후입선출이라고 하는데 짐을 쌓아올릴 때 가장 마지막에 쌓은 짐이 가장 위에 있을 것이다. 그리고 짐을 뺄 때도 가장 위에 있는 짐부터 빼게 될 것이다. 대표적인 예시로는 웹페이지 '뒤로가기'가 있다. 우리가 새로운 페이지로 넘어갈 때마다 넘어가기 전 페이지를 스택에 쌓고, 만약 뒤로가기를 누른다면 가장 위에 있는 페이지부터 꺼내오는 방식이다.  
+참고로 Stack의 경우 Vector클래스를 상속받고 있고, java에서 지원하는 Stack 클래스의 메소드들도 뜯어보면 Vector에 있는 메소드를 이용하여 구현되어 있다. 
+
+```java
+ArrayList<T> arraylist = new ArrayList<>();
+LinkedList<T> linkedlist = new LinkedList<>();
+Vector<T> vector = new Vector<>();
+Stack<T> stack = new Stack<>();
+```
+
+```java
+List<T> arraylist = new ArrayList<>();
+List<T> linkedlist = new LinkedList<>();
+List<T> vector = new Vector<>();
+List<T> stack = new Stack<>();
+
+// Stack은 Vector를 상속하기 때문에 아래와 같이 생성할 수 있다.
+Vector<T> stack = new Stack<>();
+```
+
+&nbsp;&nbsp;&nbsp;각각의 객체는 위와 같은 방식으로 선언할 수 있다. new 생성자 뒤에 객체를 명시해주기 때문에 두 번째 방식처럼 해주어도 괜찮지만 첫 번째 방식으로 해주는게 확인하기도 쉽고 가장 확실하다.
+
+# Queue 큐
+
+&nbsp;&nbsp;&nbsp;Queue Interface는 선형 자료구조로 주로 순서가 있는 데이터를 기반으로 '선입선출(先入先出, FIFO : First-in First-out)'을 위해 만들어진 인터페이스다. 흔히 Stack(스택)과 많이 비교를 하는 자료구조다. 큐가 동작하는 방식은 데이터를 10, 20, 30, 40 순으로 넣으면 데이터를 꺼낼 때(poll) 넣은 순서 그대로 10, 20, 30, 40이 나오는 구조이다. 이 때 가장 앞쪽에 있는 위치를 head(헤드)라고 부르고, 가장 후위(뒤)에 있는 위치를 tail(꼬리)라고 부른다.
+
+&nbsp;&nbsp;&nbsp;Collection 구조를 보면 알겠지만, Queue를 상속하고 있는 Deque(덱)이라는 Interface도 있다. 둘 다 같은 부류인데 Queue는 한쪽 방향으로만(단방향) 삽입-삭제가 가능한 반면, Deque는 Double ended Queue라는 의미로 양쪽에서 삽입-삭제가 가능한 자료구조라 보면 된다. 즉, head에서도 접근 가능하며, tail에서도 접근 가능한 양방향 큐라고 보면 된다.
+
+## Queue/Deque Interface를 구현하는 클래스
+
+1. LinkedList
+2. ArrayDeque
+3. PriorityQueue
+
+## Queue/Deque Interface에 선언된 대표적인 메소드
+
+<table>
+  <tr>
+    <td><center> 메소드 </center></td>
+    <td><center> 리턴 타입 </center></td>
+    <td><center> 설 명 </center></td>
+  </tr>
+  <tr>
+    <td><center> add(E e) </center></td>
+    <td><center> boolean </center></td>
+    <td> 요소를 꼬리에 추가. 큐가 가득 찼을 경우 illegalStateException 예외가 발생. </td>
+  </tr>
+  <tr>
+    <td><center> offer(E e) </center></td>
+    <td><center> boolean </center></td>
+    <td> 요소를 꼬리에 추가. </td>
+  </tr>
+  <tr>
+    <td><center> peek() </center></td>
+    <td><center> E </center></td>
+    <td> 헤드를 삭제하지 않고 요소를 검색 후 반환. </td>
+  </tr>
+  <tr>
+    <td><center> poll() </center></td>
+    <td><center> E </center></td>
+    <td> 헤드를 검색 및 삭제하면서 요소를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> addFirst(Object o) </center></td>
+    <td><center> void </center></td>
+    <td> 요소를 헤드에 추가. 큐가 가득 찼을 경우 illegalStateException 예외가 발생. </td>
+  </tr>
+  <tr>
+    <td><center> addLast() </center></td>
+    <td><center> void </center></td>
+    <td> 요소를 꼬리에 추가. 큐가 가득 찼을 경우 illegalStateException 예외가 발생. </td>
+  </tr>
+  <tr>
+    <td><center> offerFirst(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 요소를 헤드에 추가. </td>
+  </tr>
+  <tr>
+    <td><center> offerLast(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 요소를 꼬리에 추가. </td>
+  </tr>
+  <tr>
+    <td><center> peekFirst(Object o) </center></td>
+    <td><center> E </center></td>
+    <td> 헤드에 있는 요소를 삭제하지 않고 반환. </td>
+  </tr>
+  <tr>
+    <td><center> peekLast(Object o) </center></td>
+    <td><center> E </center></td>
+    <td> 꼬리에 있는 요소를 삭제하지 않고 반환. </td>
+  </tr>
+  <tr>
+    <td><center> pollFirst(Object o) </center></td>
+    <td><center> E </center></td>
+    <td> 헤드에 있는 요소를 검색 및 삭제하면서 반환. </td>
+  </tr>
+  <tr>
+    <td><center> pollLast(Object o) </center></td>
+    <td><center> E </center></td>
+    <td> 꼬리에 있는 요소를 검색 및 삭제하면서 반환. </td>
+  </tr>
+  <tr>
+    <td><center> size() </center></td>
+    <td><center> int </center></td>
+    <td> 요소의 개수를 반환. </td>
+  </tr>
+</table>
+<br/>
+
+목록은 많아 보이지만 Deque가 양방향이기 때문에 헤드와 꼬리를 나누어 메소드가 더 생성 되었을 뿐이다.
+
+&nbsp;&nbsp;&nbsp;이제 각 클래스들을 살펴보자.
+
+&nbsp;&nbsp;&nbsp;낯익은 녀석이 하나 보인다. 그렇다. 바로 LinkedList다. 그림을 보면 알겠지만 LinkedList는 List(리스트)를 구현하기도 하지만, Deque(덱)도 구현한다. 그리고 Deque Interface는 Queue Interface를 상속받는다. 즉, LinkedList는 사실상 3가지 용도로 쓸 수 있다는 것이다. 
+
+실제 LinkedList class를 보면 다음과 같이 List와 Deque를 모두 구현한다.
+
+```java
+public class LinkedList<E> extends AbstractSequentialList<E> implements List<E>, Deque<E>, Cloneable, java.io.Serializable {
+  transient int size = 0;
+
+  /**
+   * Pointer to first node. 
+   */
+  transient Node<E> first;
+
+  /**
+   * Pointer to last node. 
+   */
+  transient Node<E> last;
+
+  ...
+}
+```
+
+왜 LinkedList를 받을까? 앞서 List를 설명할 때도 말했지만 ArrayList와 LinkedList의 차이점은 Object[] 배열로 관리하느냐, Node라는 객체를 연결하여 관리하느냐의 차이였다.  
+마찬가지로 Deque 또는 Queue를 LinkedList처럼 Node 객체로 연결해서 관리하길 원한다면 LinkedList를 쓰면 된다. 원리 자체가 크게 다르지 않기 때문에 LinkedList 하나에 다중 인터페이스를 포함하고 있는 것이다.
+
+&nbsp;&nbsp;&nbsp;ArrayDeque는 반대로 ArrayList처럼 Object[] 배열로 구현되어 있다. 물론 LinkedList와 ArrayDeque 둘 다 Deque을 구현하고 있고, Deque은 Queue를 상속받기 때문에 Queue로도 쓰일 수 있다.
+
+만약 자바에서 지원하는 컬렉션에서 '일반적인 큐'를 사용하고자 한다면 LinkedList로 생성하여 Queue로 선언하면 된다.
+
+```java
+Queue<T> queue = new LinkedList<>();
+```
+
+이는 Deque도 마찬가지다.
+
+```java
+Deque<T> queue = new LinkedList<>();
+```
+
+&nbsp;&nbsp;&nbsp;PriorityQueue는 뭘까? 말 그대로 '우선순위 큐'다.  
+LinkedList는 Queue로 사용할 수 있다고 했지만 큐의 원리가 선입선출이라는 전제 아래에 짜여있다. PriorityQueue는 '데이터 우선순위'에 기반하여 우선순위가 높은 데이터가 먼저 나오는 원리다. 따로 정렬방식을 지정하지 않는다면 낮은 숫자가 높은 우선순위를 갖는다. 정렬메소드인 sort()와 같은 순서로 데이터 우선순위를 갖는다는 의미다.  
+PriorityQueue는 주어진 데이터들 중 최댓값, 혹은 최솟값을 꺼내올 때 매우 유용하게 사용될 수 있다. 단, 사용자가 정의한 객체를 타입으로 쓸 경우 반드시 Comparator 또는 Comparable을 통해 정렬 방식을 구현해주어야 한다.
+
+```java
+ArrayDeque<T> arraydeque = new ArrayDeque<>();
+PriorityQueue<T> priorityqueue = new PriorityQueue<>();
+
+Deque<T> arraydeque = new ArrayDeque<>();
+Deque<T> linkedlistdeque = new LinkedList<>();
+
+Queue<T> arraydeque = new ArrayDeque<>();
+Queue<T> linkedlistdeque = new LinkedList<>();
+Queue<T> priorityqueue = new PriorityQueue<>();
+```
+
+
 ---
 **Reference**
 

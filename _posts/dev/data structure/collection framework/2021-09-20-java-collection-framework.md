@@ -44,7 +44,7 @@ comments: true
 &nbsp;&nbsp;&nbsp;기본 구조라고 할 때 떠오르는 것이 있을 것이다. 바로 Interface(인터페이스)다. 인터페이스 자체가 기본적인 뼈대(추상 구조)로 되어있지 않은가? 이렇듯 실제로 자바에서 제공하는 Collection은 크게 3가지 인터페이스, List(리스트), Queue(큐), Set(집합)으로 나뉘어 있다. 앞서 설명한 '형태에 따른 자료구조'라고 보면 된다. 그리고 각 분야별로 '구현' 된 것들이 있다.  
 말로 하면 이해하기 힘들 것이니 아래 이미지를 보자.
 
-<img src="https://miro.medium.com/max/1200/1*YXafPhPiXmGrSM42D0aX6Q.png" width="50%" height="auto" align="center"><br/>
+<img src="https://miro.medium.com/max/1200/1*YXafPhPiXmGrSM42D0aX6Q.png" width="60%" height="auto" align="center"><br/>
 
 파란 칸들은 클래스이고, 주황색 칸들은 인터페이스들이다. 각 관계에서 클래스가 인터페이스를 향하는 것은 대부분 구현(implements)관계이고 인터페이스 간은 확장(extends) 관계이다. 예외적으로 stack과 vector는 구현관계에 있다. 
 
@@ -309,6 +309,146 @@ Queue<T> linkedlistdeque = new LinkedList<>();
 Queue<T> priorityqueue = new PriorityQueue<>();
 ```
 
+# Set 셋 / 세트
+
+&nbsp;&nbsp;&nbsp;Set(세트)는 말 그대로 '집합'이다. Set의 가장 큰 특징 두 가지가 있다. 첫 번째는 '데이터를 중복해서 저장할 수 없음'이고 두 번째는 '입력 순서대로의 저장 순서를 보장하지 않는다'이다.
+
+&#128161;단, LinkedHashSet은 Set임에도 불구하고 입력 순서대로의 저장순서를 보장하고 있다. 그러나 데이터를 중복해서 저장할 수 없는 것은 같다.
+
+&nbsp;&nbsp;&nbsp;앞서 설명한 내용을 보면 List계열은 index(Node)로 관리하기 때문에 `add()`같은 메소드를 쓰면 순서대로 저장되었고, Queue 계열 또한 우선순위 큐(PriorityQueue)를 제외하고는 기본적으로 입력한 순서대로 객체가 연결되었다.  
+하지만 Set의 경우는 입력받은 순서와 상관없이 데이터를 집합시키기 때문에 입력받은 순서를 보장할 수 없다. 이런 순서 보장이 안된다는 불편함을 개선시키기 위해 LinkedHashSet이 있다. 데이터 중복을 허용하고 싶지 않은데 입력 순서는 보장받고 싶다면 LinkedHashSet을 사용하면 된다.  
+그리고 Queue와 유사하게 Set을 상속받고 있는 SortedSet Interface도 있다.
+
+## Set / SortedSet Interface를 구현하는 클래스
+
+1. HashSet
+2. LinkedHashSet
+3. TreeSet
+
+## Set / SortedSet Interface에 선언된 대표적인 메소드
+
+<table>
+  <tr>
+    <td><center> 메소드 </center></td>
+    <td><center> 리턴 타입 </center></td>
+    <td><center> 설 명 </center></td>
+  </tr>
+  <tr>
+    <td><center> add(E e) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정된 요소가 없을 경우 추가.<br/>지정된 요소가 존재하는 경우 false를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> contains(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정된 요소가 Set에 존재하는지 확인. </td>
+  </tr>
+  <tr>
+    <td><center> equals(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정된 객체와 현재 집합이 같은지 비교. </td>
+  </tr>
+  <tr>
+    <td><center> isEmpty() </center></td>
+    <td><center> boolean </center></td>
+    <td> 집합이 비어있으면 true, 아니면 false를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> remove(Object o) </center></td>
+    <td><center> boolean </center></td>
+    <td> 지정된 객체가 집합에 존재하는 경우 해당 요소를 제거. </td>
+  </tr>
+  <tr>
+    <td><center> size() </center></td>
+    <td><center> int </center></td>
+    <td> 집합에 있는 요소의 개수를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> clear() </center></td>
+    <td><center> void </center></td>
+    <td> 집합에 있는 모든 요소를 제거. </td>
+  </tr>
+  <tr>
+    <td><center> first(E e) </center></td>
+    <td><center> E </center></td>
+    <td> 첫번째 요소(가장 낮은 요소)를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> Last() </center></td>
+    <td><center> E </center></td>
+    <td> 마지막 요소(가장 높은 요소)를 반환. </td>
+  </tr>
+  <tr>
+    <td><center> headSet(E toElement) </center></td>
+    <td><center> SortedSet<\E> </center></td>
+    <td> 지정된 요소(toElement)보다 작은 요소들을 집합으로 반환. </td>
+  </tr>
+  <tr>
+    <td><center> tailSet(E fromElement) </center></td>
+    <td><center> SortedSet<\E> </center></td>
+    <td> 지정된 요소(fromElement)를 포함하여 큰 요소들을 집합으로 반환. </td>
+  </tr>
+  <tr>
+    <td><center> subSet(E from, E to) </center></td>
+    <td><center> SortedSet<\E> </center></td>
+    <td> 지정된 from요소를 포함하여 from요소보다 크고, 지정된 to요소보다 작은 요소들을 집합으로 반환. </td>
+  </tr>
+</table>
+<br/>
+
+&nbsp;&nbsp;&nbsp;Set Interface을 구현하는 클래스들은 HashSet, LinkedHashSet, TreeSet 3가지가 있다. 좀 더 구체적으로 말하자면 TreeSet은 Set Interface를 상속받은 SortedSet Interface를 구현하고 있다. 그리고 Set의 가장 큰 특징은 '중복되는 데이터를 넣지 못한다'이고, LinkedHashSet을 제외하고 대부분의 Set은 입력 순서대로의 저장순서를 보장하지 않는다.
+
+그럼 이들의 각 특징에 대해 간략하게 알아보고 가자.
+
+&nbsp;&nbsp;&nbsp;먼저 HashSet은 가장 기본적인 Set 컬렉션의 클래스로 입력 순서를 보장하지 않고, 순서도 마찬가지로 보장되지 않는다.  
+쉽게 이해할 만한 예시로 게임에서 '닉네임'을 만들거나 아이디를 생성할 때 '중복확인'을 눌러 중복된 닉네임 또는 아이디인지 확인한다. 이는 데이터가 정렬되어 있을 필요도 없고, 빠르게 중복되는 값인지만 찾으면 되기 때문에 유용한 방법이 될 수 있다.  
+좀 더 상세하게 말하자면 hash에 의해 데이터의 위치를 특정시켜 해당 데이터를 빠르게 색인(search)할 수 있게 만든 것이다. 즉, Hash기능과 Set컬렉션이 합쳐진 것이 HashSet이다. 그렇기 때문에 삽입, 삭제, 색인이 매우 빠른 컬렉션 중 하나다.
+
+&nbsp;&nbsp;&nbsp;LinkedHashSet의 경우 이름에서 볼 수 있듯이 Link + Hash + Set이 결합된 형태다. LinkedList에서 보면 `add()`메소드를 통해 요소들을 넣은 순서대로 연결한다. 즉, LinkedList의 첫번째 요소부터 차례대로 출력하면 입력했던 순서대로 출력된다는 것이고 이는 순서를 보장한다는 의미다.  
+Set의 경우 기본적으로 입력 순서대로의 저장순서를 보장하지 않아 '중복은 허용하지 않으면서 순서를 보장받고 싶은경우'에는 불편할 수 밖에 없다. 이를 보완하기 위해 존재하는 것이 바로 LinkedHashSet인 것이다.  
+실생활에서 예로 들자면 페이지를 열 때 만약 해당 페이지가 중복되는 경우에는 캐시를 다시 적재할 필요없지만, 새로운 페이지를 할당해야 할 떄 최근에 사용되지 않은 캐시를 비우려면 가장 오래된 캐시를 비우는 것이 좋다. 이를 LRU 알고리즘(Least Recently Used Algorithm)이라고 하는데, 이 때 입력된(저장된) 순서를 알아야 오래된 캐시를 비울 수 있다. 이에 적용할 수 있는 자료구조 중 하나다.  
+단지 이는 이해를 돕기 위한 예시로 실제로는 LRU기법으로 `LinkedHashMap`이라는 자료구조가 대부분을 차지하고 있어 많이 쓰이진 않는다.
+
+&nbsp;&nbsp;&nbsp;TreeSet은 HashSet과 마찬가지로 입력 순서대로의 저장 순서를 보장하지 않으며 중복 데이터 또한 넣지 못한다. 다만 특별한 점이 있다면 SortedSet Interface의 이름에서 알 수 있듯 이를 구현한 TreeSet은 데이터의 '가중치에 따른 순서'대로 정렬되어 보장한다는 것이다.  
+앞서 PriorityQueue를 생각해보자. 데이터들이 입력한 순서대로가 아닌 값에 따라 정렬되어 Queue에 담아진다. 마찬가지로 TreeSet은 '중복되지 않으면서 특정 규칙에 의해 정렬된 형태의 집합을 쓰고 싶을 때 쓴다. 정렬된 형태로 있다보니 특정 구간의 집합요소들을 탐색할 때 매우 유용하다.
+
+&#128073;Tree 라는 자료구조 자체가 데이터를 일정 순서에 의해 정렬하는 구조다. 거기에 더해진 것이 바로 Set인 중복값 방지 자료구조인 것이다.
+
+각 클래스별 생성방법은 다음과 같다.
+
+```java
+HashSet<T> hashset = new HashSet<>();
+LinkedHashSet<T> linkedhashset = new LinkedHashSet<>();
+TreeSet<T> treeset = new TreeSet<>();
+
+SortedSet<T> treeset = new TreeSet<>();
+
+Set<T> hashset = new HashSet<>();
+Set<T> linkedhashset = new LinkedHashSet<>();
+Set<T> treeset = new TreeSet<>();
+```
+
+# 적절한 자료구조 사용하기
+
+자바에서 지원하는 대표적인 컬렉션 11가지를 알아보았다. 설명한 컬렉션은 다음과 같다.
+
+- ArrayList
+- LinkedList
+- Vector
+- Stack
+- Queue(by LinkedList)
+- PriorityQueue
+- Deque(by LinkedList)
+- ArrayDeque
+- HashSet
+- LinkedHashSet
+- TreeSet
+
+이제 어떤 상황에 어떤 자료구조를 쓰는 것이 알맞은가에 대해 알아보자. 때마침 잘 설명된 이미지가 있다.
+
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2FbIvfpY%2FbtqI7ysSAlg%2Fopwhvycjl6rAYfClVZNeOk%2Fimg.png" width="60%" height="auto" align="center"><br/>
+
+위 내용 중에서 Map에 관해 설명하지 않았는데, Map은 key와 value가 쌍으로 이루어진 자료구조이다. 지금까지 설명한 Collection들은 모두 단일 value이기 때문에 그 쪽 내용은 살짝 넣어두자.
 
 ---
 **Reference**

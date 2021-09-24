@@ -1,6 +1,6 @@
 ---
 layout: post
-date: 2021-09-20 22:26:00
+date: 2021-09-23 22:26:00
 title: "List Interface(리스트 인터페이스)"
 description: "자료구조"
 subject: dev

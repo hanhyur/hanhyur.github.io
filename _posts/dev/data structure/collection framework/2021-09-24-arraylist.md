@@ -172,6 +172,146 @@ private void resize() {
 
 만약 복사할 배열보다 용적의 크기가 작을경우 새로운 용적까지만 복사하고 반환하기 때문에 예외발생에 대해 안전하다.
 
+## add 메소드 구현
+
+&nbsp;&nbsp;&nbsp;ArrayList에 데이터를 추가할 수 있도록 리스트 인터페이스에 있는 add() 메소드를 구현할 것이다.
+
+add 메소드에는 크게 3가지로 분류가 된다.
+
+- 가장 마지막 부분에 추가 (기본값) - addLast(E value)
+
+- 가장 앞부분에 추가 - addFirst(E value)
+
+- 특정 위치에 추가 - add(int index, E value) 
+
+현재 자바에 내장되어있는 ArrayList에서는 addLast()역할을 add() 메소드가 하고, 특정 위치에 추가는 add(int index, E element)로 오버로딩된 메소드가 하며, addFisrt()라는 메소드는 없다. 하지만 좀 더 쉽게 보기 위해서 나누어서 만들 것이다.
+
+### 1. 기본삽입 : add(E value) & addLast(E value) 메소드
+
+&nbsp;&nbsp;&nbsp;먼저 add()의 기본 값은 addLast()이다. 가장 마지막 부분에만 추가하면 되기 때문에 그리 어렵지 않다.
+
+addLast() 메소드를 구현하면 아래와 같다. 자바 내부에서 add메소드는 boolean을 리턴하기 때문에 boolean 메소드로 구현해주었다.
+
+```java
+@Override
+public boolean add(E value) {
+	addLast(value);
+	return true;
+}
+ 
+public void addLast(E value) {
+
+	// 가득차있는 상태라면 용적 재할당
+	if (size == array.length) {
+		resize();
+	}
+
+	array[size] = value;	// 마지막 위치에 요소 추가
+	size++;	// 사이즈 1 증가
+}
+```
+
+&nbsp;&nbsp;&nbsp;addLast 메소드를 보자. add를 호출하면 파라미터로 넘어온 value는 addLast로 보내진다. 그리고 데이터를 넣기에 앞서 현재 용적이 가득차있는지 검사한다.  
+만약 가득차있다면 우리가 만들었던 resize() 메소드를 호출해서 array가 더 큰 용적을 갖도록 만들어 준다. 그리고 마지막 위치(size)에 value를 추가해주고 size를 1 증가시켜준다.
+
+size가 요소의 개수이고, index는 0부터 시작하기 때문에 `array[size] = value;` 를 해주면 된다. 이 부분을 헷갈려서 잘못된 인덱스에 참조하는 경우가 많으니 주의할 필요가 있다.
+
+### 2. 중간삽입 : add(int index, E value) 
+
+&nbsp;&nbsp;&nbsp;중간에 추가하는 것은 우선 index가 범위를 벗어나진 않는지 확인하고, 중간에 삽입할 경우 기존에 있던 index의 요소와 그의 뒤에 있는 데이터들을 모두 한 칸씩 뒤로 밀어야한다.  
+예를 들어 add에서 index로 들어오는 파라미터에 대해, 만약 값이 3이 들어왔다면 원래 있던 배열에서 3을 포함한 뒤에 있는 모든 요소들을 한 칸씩 뒤로 옮긴 뒤에 3의 위치에 새로운 데이터를 삽입 해주는 방식이다.
+
+addLast가 단순히 데이터를 추가하는 과정이였다면 중간 삽입은 데이터를 미루는 코드가 추가된 것이다.
+
+```java
+@Override
+public void add(int index, E value) {
+ 
+	if (index > size || index < 0) {	// 영역을 벗어날 경우 예외 발생 
+		throw new IndexOutOfBoundsException();
+	}
+
+	if (index == size) {	// index가 마지막 위치라면 addLast 메소드로 요소추가
+		addLast(value);
+	} else {
+		
+		if(size == array.length) {	// 가득차있다면 용적 재할당
+			resize();
+		}
+		
+		// index 기준 후자에 있는 모든 요소들 한 칸씩 뒤로 밀기
+		for (int i = size; i > index; i--) {
+			array[i] = array[i - 1];
+		}
+ 
+		array[index] = value;	// index 위치에 요소 할당
+		size++;
+	}
+
+}
+```
+
+먼저 index로 들어오는 값이 size를 벗어나는지(빈 공간을 허용하지 않으므로), 또는 음수가 들어오는지를 확인한다. 만약에 범위를 벗어나거나 인덱스가 음수가 들어오면 예외를 발생시키도록 한다. 그리고 사용자가 넘겨준 index가 size와 같다는 것은 결국 가장 마지막에 추가하는 것과 같은 의미이므로 이미 만들어두었던 addLast() 메소드로 가도록 한다.  
+그 외의 경우가 이제 중간에 삽입되는 경우다. 당연하게도 size가 현재 배열의 용적과 같다는 것은 이미 가득차서 더이상 들어올 공간이 없다는 뜻이므로 resize()메소드를 호출해줌으로써 용적량을 늘리도록 한다. 그리고 index와 그 후방에 있는 데이터들을 한 칸씩 뒤로 밀어야 하므로 반복문을 통해 뒤로 밀어주도록 한 뒤 array[index]에는 새로운 요소로 교체해주도록 한다.
+
+### 3. addFirst(E value)
+
+&nbsp;&nbsp;&nbsp;addFirst는 간단하다. 기존 데이터가 있다면 어차피 모든 데이터들을 뒤로 밀어야하기 때문에 앞서 만들었던 중간 삽입에서 index를 0으로 보내면 된다.
+
+```java
+public void addFirst(E value) {
+	add(0, value);
+}
+```
+
+&nbsp;&nbsp;&nbsp;이렇게 기본적인 요소 추가 메소드를 만들었다. 만든 메소드를 한 번에 보면 아래와 같다. 
+
+```java
+@Override
+public boolean add(E value) {
+	addLast(value);
+	return true;
+}
+
+public void addLast(E value) {
+	if (size == array.length) {
+		resize();
+	}
+
+	array[size] = value;
+	size++;
+}
+
+@Override
+public void add(int index, E value) {
+
+	if (index > size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	if (index == size) {
+		addLast(value);
+	} else {
+		
+		if(size == array.length) {
+			resize();
+		}
+		
+		for (int i = size; i > index; i--) {
+			array[i] = array[i - 1];
+		}
+
+		array[index] = value;
+		size++;
+	}
+
+}
+
+public void addFirst(E value) {
+	add(0, value);
+}
+```
+
 ---
 **Reference**
 

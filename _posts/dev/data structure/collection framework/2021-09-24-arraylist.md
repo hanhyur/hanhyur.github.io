@@ -312,6 +312,161 @@ public void addFirst(E value) {
 }
 ```
 
+## get, set, indexOf, contains 메소드 구현
+
+&nbsp;&nbsp;&nbsp;remove 메소드 전에 다른 메소드들을 먼저 구현하는 이유는 remove 메소드에서 유사한 동작을 필요로 하기 때문에 비슷한 메소드들을 먼저 구현 한 뒤 remove 구현파트에서 이를 응용하면 효율적이기 때문이다.
+
+### 1. get(int index) 메소드
+
+&nbsp;&nbsp;&nbsp;get()은 리스트를 써봤다면 쉽게 떠오를 것이다. index로 들어오는 값을 인덱스 삼아 해당 위치에 있는 요소를 반환하는 메소드다. 배열의 위치를 찾아가는 것이기 때문에 반드시 잘못된 위치 참조에 대한 예외처리를 해주어야 한다.
+
+```java
+@SuppressWarnings("unchecked")
+@Override
+public E get(int index) {
+	if(index >= size || index < 0) {	// 범위 벗어나면 예외 발생
+		throw new IndexOutOfBoundsException();
+	}
+	// Object 타입에서 E타입으로 캐스팅 후 반환
+	return (E) array[index];
+}
+```
+
+&nbsp;&nbsp;&nbsp;여기서 `@SuppressWarnings("unchecked")`은 뭘까? `@SuppressWarnings("unchecked")`을 붙이지 않으면 type safe(타입 안정성)에 대해 경고를 보낸다. 반환되는 것을 보면 E 타입으로 캐스팅을 하고 있고 그 대상이 되는 것은 Object[] 배열의 Object 데이터다. 즉, Object -> E 타입으로 변환을 하는 것인데 이 과정에서 변환할 수 없는 타입을 가능성이 있다는 경고로 메소드 옆에 경고표시가 뜨는데 add하여 받아들이는 데이터 타입은 유일하게 E 타입만 존재한다.  
+그렇기 때문에 형 안정성이 보장된다. 한마디로 `ClassCastException`이 뜨지 않으니 이 경고들을 무시하겠다는 것이다. 형 변환시 예외 가능성이 없을 확실한 경우에 최소한의 범위에서 써주는 것이 좋다. 그렇지 않으면 중요한 경고 메세지를 놓칠 수도 있기 때문이다.
+
+&nbsp;&nbsp;&nbsp;get 메소드에서도 index가 음수이거나, size와 같거나 큰 수가 들어올 경우 잘못된 참조를 하고 있기 때문에 `IndexOutOfBoundsException()` 예외를 발생시킨다. 만약 index가 정상적인 참조가 가능한 값일 경우 해당 인덱스의 요소를 반환해준다. 이 때 원본 데이터 타입으로 반환하기 위해 E 타입으로 캐스팅을 해준다.
+
+### 2. set(int index, E value) 메소드
+
+&nbsp;&nbsp;&nbsp;set 메소드는 기존에 index에 위치한 데이터를 새로운 데이터(value)으로 '교체'하는 것이다. add 메소드가 데이터 '추가'였다면 set 메소드는 '교체'인 것이다. 결과적으로 index에 위치한 데이터를 교체하는 것이기 때문에 get 메소드와 유사하다. 다만 get은 해당 인덱스의 값을 반환하는 것이였다면 set은 데이터만 교체해주면 된다.
+
+```java
+@Override
+public void set(int index, E value) {
+	if (index >= size || index < 0) {	// 범위를 벗어날 경우 예외 발생
+		throw new IndexOutOfBoundsException();
+	}	else {
+		// 해당 위치의 요소를 교체
+		array[index] = value;
+	}
+}
+```
+
+마찬가지로 잘못된 인덱스를 참조하는지 반드시 검사가 필요하다. index로 참조하는 모든 메소드들은 반드시 검사해야한다고 생각하면 편하다.
+
+### 3. indexOf(Object value) 메소드
+
+&nbsp;&nbsp;&nbsp;indexOf 메소드는 사용자가 찾고자 하는 요소(value)의 '위치(index)'를 반환하는 메소드다. 이 때 생기는 궁금즘이 있다. 찾고자 하는 요소가 중복된다면 어떻게 반환해야할까? 이에 대한 답은 "가장 먼저 마주치는 요소의 인덱스를 반환한다"이다. 찾고자 하는 요소가 없다면 -1을 반환하면 된다.
+
+한 가지 중요한 점은 객체끼리 비교할 때는 동등연산자(==)가 아니라 반드시 .equals()로 비교해야 한다. 객체끼리 비교할 때 동등연산자를 쓰면 값을 비교하는 것이 아닌 주소를 비교하는 것이기 때문에 잘못된 결과가 나타나게 된다.
+
+```java
+@Override
+public int indexOf(Object value) {
+	int i = 0;
+    
+	// value와 같은 객체(요소 값)일 경우 i(위치) 반환
+	for (i = 0; i < size; i++) {
+		if (array[i].equals(value)) {
+			return i;
+		}
+	}
+
+	// 일치하는 것이 없을경우 -1을 반환
+	return -1;
+}
+```
+
+### 3-1. LastindexOf(Object value) 메소드
+
+&nbsp;&nbsp;&nbsp;indexOf 메소드는 index가 0부터 시작했다면 반대로 거꾸로 탐색하는 과정도 있는 것이 좋을 것 같다. 사용자가 찾고자 하는 인덱스가 뒤쪽이라고 예상 될 때 굳이 앞에서부터 찾을 필요가 없다. 또한 이후에 구현 할 Stack에서도 이용 가능하므로 미리 만들어 두도록 하자.
+
+```java
+public int lastIndexOf(Object value) {
+	for(int i = size - 1; i >= 0; i--) {
+		if(array[i].equals(value)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+```
+
+### 4. contains(Object value) 메소드
+
+&nbsp;&nbsp;&nbsp;indexOf 메소드가 사용자가 찾고자 하는 요소(value)의 '위치(index)'를 반환하는 메소드였다면, contains는 사용자가 찾고자 하는 요소(value)가 존재의 유무를 반환하는 메소드다. 찾고자 하는 요소가 존재한다면 true를, 존재하지 않는다면 false를 반환한다.  
+그러면 indexOf와 기능이 비슷하니깐 이를 쓸 수 있을 것 같은데? 라는 생각이 들었다면 아주 훌륭하다. 어차피 해당 요소가 존재하는지를 '검사'한다는 기능은 같기 때문에 indexOf 메소드를 이용하여 만약 음수가 아닌 수가 반환되었다면 요소가 존재한다는 뜻이고, 음수(-1)이 나왔다면 요소가 존재하지 않는다는 뜻이다.
+
+```java
+@Override
+public boolean contains(Object value) {
+ 
+	// 0 이상이면 요소가 존재한다는 뜻
+	if(indexOf(value) >= 0) {
+		return true;
+	}	else {
+		return false;
+	}
+}
+```
+
+이렇게 get, set, indexOf, contains 메소드들을 만들어보았다.
+
+```java
+@SuppressWarnings("unchecked")
+@Override
+public E get(int index) {
+	if(index >= size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	return (E) array[index];
+}
+
+@Override
+public void set(int index, E value) {
+	if (index >= size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	} else {
+		array[index] = value;
+	}
+}
+
+@Override
+public int indexOf(Object value) {
+	int i = 0;
+
+	for (i = 0; i < size; i++) {
+		if (array[i].equals(value)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+public int lastIndexOf(Object value) {
+	for(int i = size - 1; i >= 0; i--) {
+		if(array[i].equals(value)) {
+			return i;
+		}
+	}
+
+	return -1;
+}
+
+@Override
+public boolean contains(Object value) {
+	if(indexOf(value) >= 0) {
+		return true;
+	}	else {
+		return false;
+	}
+}
+```
+
 ---
 **Reference**
 

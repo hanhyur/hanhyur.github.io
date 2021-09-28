@@ -467,6 +467,54 @@ public boolean contains(Object value) {
 }
 ```
 
+## remove 메소드 구현
+
+&nbsp;&nbsp;&nbsp;remove 메소드의 경우 크게 2가지로 나눌 수 있다.
+
+- 특정 index의 요소를 삭제 - remove(int index)
+- 특정 요소를 삭제 - remove(Object value)
+
+자바에 내장되어 있는 ArrayList 역시 remove() 메소드가 없다. remove(int index)와 remove(Object value) 메소드만 존재한다. 하지만 이후에 다룰 Stack이나 LinkedList, Queue 등 다양한 자료구조들은 remove() 메소드가 존재하기 때문에 염두해두어야 한다.  
+만약 remove() 기능을 넣어 가장 앞 또는 뒤의 요소를 제거하고 싶다면 remove(int index)을 호출하여 파라미터로 0 또는 size-1을 넘겨주면 된다.
+
+### 1. remove(int index) 메소드
+
+&nbsp;&nbsp;&nbsp;remove(int index)는 '특정 위치에 있는 요소를 제거'하는 것이다. 쉽게 생각해서 index에 위치한 데이터를 삭제하고, 해당 위치 이후의 데이터들을 한 칸씩 당겨오는 것이다. add(int index, E value)를 했던 방식을 거꾸로 하면 된다.
+
+index의 요소를 임시 변수에 담고 배열에서 지운 후 데이터들을 한 칸씩 당겨준다. 데이터 사이에 빈 공간을 채웠으면 size 값을 줄여주면 된다. 데이터가 일정량 이상 비워진 경우 용적을 줄이기 위해 resize() 메소드를 가장 마지막에 추가해주자.
+
+```java
+@SuppressWarnings("unchecked")
+@Override
+public E remove(int index) {
+ 
+	if (index >= size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	}
+ 
+	E element = (E) array[index];	// 임시 저장
+	array[index] = null;
+    
+	// 삭제한 요소의 뒤에 있는 모든 요소들을 한 칸씩 당겨줌
+	for (int i = index; i < size; i++) {
+		array[i] = array[i + 1];
+		array[i + 1] = null;
+	}
+
+	size--;
+	resize();
+
+	return element;
+}
+```
+
+삭제된 원소를 반환해야 되기 때문에 Object 타입을 E 타입으로 캐스팅을 해주면서 경고창이 뜬다. get()메소드에서 설명했듯이 삭제되는 원소 또한 E Type 외에 들어오는 것이 없기 때문에 형 안정성이 확보되므로 경고표시를 무시하기 위해 `@SuppressWarnings("unchecked")`을 붙인다.
+
+&nbsp;&nbsp;&nbsp; 그리고 항상 마지막 원소의 인덱스는 size 보다 1 작다. 그렇기 때문에 범위 체크와 이후의 배열 요소들을 한 칸씩 당겨줄 때 시작 점과 끝 점을 잘 생각하면서 참조해야한다.  
+명시적으로 요소를 null로 처리해주어야 GC에 의해 더이상 쓰지 않는 데이터의 메모리를 수거(반환)해주기 때문에 최대한 null 처리를 하는 것이 좋다. 물론 명시적으로 안해도 크게 문제는 없지만 그럴 경우 GC가 쓰지 않는 데이터를 나중에 참조될 가능성이 있는 데이터로 볼 가능성이 높아진다. 이는 결국 메모리를 많이 잡아먹을 수 있고 결과적으로 프로그램 성능에도 영향을 미친다.
+
+만약 index가 정상적인 참조가 가능한 값일 경우 해당 인덱스의 요소를 반환해준다. 이 때 원본 데이터 타입으로 반환하기 위해 E 타입으로 캐스팅을 해준다.
+
 ---
 **Reference**
 

@@ -116,6 +116,83 @@ private Node<E> search(int index) {
 }
 ```
 
+## add 메서드 구현
+
+&nbsp;&nbsp;&nbsp;SinglyLinkedList에 데이터를 추가할 수 있도록 리스트 인터페이스에 있는 add() 메서드를 구현해야한다. add() 메서드를 Override(재정의)를 한다고 보면 된다.  
+add 메서드에는 ArrayList와 마찬가지로 크게 3가지로 분류가 된다.
+
+- 가장 앞부분에 추가 - addFirst(E value)
+- 가장 마지막 부분에 추가 (기본값) - addLast(E value)
+- 특정 위치에 추가 - add(int index, E value) 
+
+자바에 내장되어있는 LinkedList에서는 add() 역할을 addLast() 메서드가 하고, 특정 위치에 추가는 add(int index, E element) 메서드, 가장 첫 부분에 추가는 addFisrt()가 한다.
+
+### 1. addFisrt(E value)
+
+&nbsp;&nbsp;&nbsp;기본 값인 add()및 addLast()를 구현하기 전에 먼저 addFisrt()를 구현해보자. 그 이유는 addLast()를 구현 할 때 addFirst()를 사용하기 때문이다. 이 부분은 addLast()를 구현 할 때 다시 한 번 확인하자.
+
+데이터를 이동시키는 것이 아닌 새로운 노드를 생성하고 새 노드의 레퍼런스 변수(next)가 head 노드를 가리키도록 구현해주면 된다.
+
+```java
+public void addFirst(E value) {
+ 
+	Node<E> newNode = new Node<E>(value);	// 새 노드 생성
+	newNode.next = head;	// 새 노드의 다음 노드로 head 노드를 연결
+	head = newNode;	// head가 가리키는 노드를 새 노드로 변경
+	size++;
+ 
+	/**
+	 * 다음에 가리킬 노드가 없는 경우(=데이터가 새 노드밖에 없는 경우)
+	 * 데이터가 한 개(새 노드)밖에 없으므로 새 노드는 처음 시작노드이자
+	 * 마지막 노드다. 즉 tail = head 다.
+	 */
+	if (head.next == null) {
+		tail = head;
+	}
+
+}
+```
+
+새 노드(newNode)를 하나 만들어 준 다음 '가장 앞에 추가'해야 하므로 기존에 있던 head가 가리키는 노드 앞에 존재해야 한다. 즉, 새로운 노드의 next가 다음 노드인 head가 되는 것이다. 그렇게 링크를 연결해주었다면, head가 가리키는 첫 번째 노드를 새로운 노드로 변경해주고 사이즈를 1 증가시키면 된다.
+
+예외적으로 아무런 노드가 없는 상태에서 처음으로 추가하는 노드인 경우 결국 head가 가리키는 노드는 없다. 이는 head 노드(새로운 노드)가 처음이자 마지막 노드가 된다는 말이기 때문에 마지막을 가리키는 변수 tail은 곧 head와 같은 노드를 가리키게 된다.
+
+### 2. 기본삽입 : add(E value) & addLast(E value) 메서드
+
+&nbsp;&nbsp;&nbsp;add()의 기본 값은 addLast()이다. LinkedLIst API를 보면 add메서드를 호출하면 add() 메서드는 addLast()를 호출한다. 즉, 구현 자체는 addLast를 중점적으로 구현하면 된다.  
+addFirst()를 먼저 구현한 이유는 addLast()를 사용했는데 size가 0일 경우(=아무런 노드가 없는 경우) 처음으로 데이터를 추가하는 것이기 때문에 addFirst()를 호출해주면 되므로 addFirst()를 먼저 구현했다.
+
+데이터를 이동시키는 것이 아닌 새로운 노드를 생성하고 이전 노드의 레퍼런스 변수(next)가 새로운 노드를 가리키도록 해주면 된다.
+
+```java
+@Override
+public boolean add(E value) {
+	addLast(value);
+	return true;
+}
+
+public void addLast(E value) {
+	Node<E> newNode = new Node<E>(value);	// 새 노드 생성 
+
+	if (size == 0) {	// 처음 넣는 노드일 경우 addFisrt로 추가
+		addFirst(value);
+		return;
+	}
+
+	/**
+	 * 마지막 노드(tail)의 다음 노드(next)가 새 노드를 가리키도록 하고
+	 * tail이 가리키는 노드를 새 노드로 바꿔준다. 
+	 */
+	tail.next = newNode;
+	tail = newNode;
+	size++;
+}
+```
+
+기존에 있던 tail 노드가 다음 노드를 가리키는 변수(next)를 새 노드를 가리키도록 변경하고 tail이 가리키는 노드를 새로운 노드로 변경만 해주면 된다.
+
+
+
 ---
 **Reference**
 

@@ -191,6 +191,154 @@ public void addLast(E value) {
 
 기존에 있던 tail 노드가 다음 노드를 가리키는 변수(next)를 새 노드를 가리키도록 변경하고 tail이 가리키는 노드를 새로운 노드로 변경만 해주면 된다.
 
+### 3. add(int index, E value)
+
+&nbsp;&nbsp;&nbsp;구현할 때 처리해야 할 부분이 많은데 넣으려는 위치의 앞 뒤로 링크를 새로 업데이트 해주어야 하기 때문이다.
+
+먼저 넣으려는 위치(예를들어 index = 3)의 노드와 이전의 노드를 찾아야 한다. 넣으려는 위치의 이전노드를 prev_Node라고 하고, 넣으려는 위치의 기존노드를 next_Node라고 할 때, 앞서 우리가 만든 메소드 search()를 사용하여 넣으려는 위치 - 1의 노드(prev_Node)를 찾아내고, next_Node는 prev_Node.next를 통해 찾는다. 그리고 prev_Node의 링크를 새로 추가하려는 노드로 변경하고, 새로 추가하려는 노드의 링크는 next_Node로 변경해주는 것이다.  
+다만 index 변수가 잘못된 위치를 참조할 수 있으니 이에 대한 예외처리로 IndexOutOfBoundsException을 한다.
+
+```java
+@Override
+public void add(int index, E value) {
+
+	// 잘못된 인덱스를 참조할 경우 예외 발생
+	if (index > size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	// 추가하려는 index가 가장 앞에 추가하려는 경우 addFirst 호출 
+	if (index == 0) {
+		addFirst(value);
+		return;
+	}
+
+	// 추가하려는 index가 마지막 위치일 경우 addLast 호출
+	if (index == size) {
+		addLast(value);
+		return;
+	}
+
+	// 추가하려는 위치의 이전 노드 
+	Node<E> prev_Node = search(index - 1);
+
+	// 추가하려는 위치의 노드
+	Node<E> next_Node = prev_Node.next;
+
+	// 추가하려는 노드
+	Node<E> newNode = new Node<E>(value);	
+
+	/**
+	 * 이전 노드가 가리키는 노드를 끊은 뒤
+	 * 새 노드로 변경해준다. 
+	 * 또한 새 노드가 가리키는 노드는 next_Node로
+	 * 설정해준다. 
+	 */
+	prev_Node.next = null;
+	prev_Node.next = newNode;
+	newNode.next = next_Node;
+	size++;
+
+}
+```
+
+## remove 메소드 구현
+
+&nbsp;&nbsp;&nbsp;추가해주었다면 반대로 삭제도 할 수 있어야 할테니 remove() 메소드를 구현해보자. 쉽게 생각해서 add() 메소드의 메커니즘을 반대로 생각하면 된다.
+
+remove 메소드의 경우 크게 3가지로 나눌 수 있다.
+
+- 가장 앞의 요소(head)를 삭제 - remove()
+- 특정 index의 요소를 삭제 - remove(int index)
+- 특정 요소를 삭제 - remove(Object value)
+
+기본적으로 삭제 연산의 가장 기초는 remove() 메소드로 head가 가리키는 요소, 첫 번째 요소를 삭제하는 것이다. 인덱스로 생각한다면 0 위치에 있는 요소를 말한다. 그리고 다른 remove() 메소드들을 구현할 때 자칫 잘못해서 null을 참조하거나 잘못된 참조를 하는 경우도 있으니 신중하게 작성하자.
+
+### 1. remove() 메소드
+
+&nbsp;&nbsp;&nbsp;remove()는 '가장 앞에 있는 요소'를 제거하는 것이다. 즉, head가 가리키는 요소만 없애주면 된다.
+
+head가 가리키는 노드의 링크와 데이터를 null로 지워준 뒤 head를 다음 노드로 업데이트를 해주는 방식이다. 그리고 삭제하려는 노드가 리스트에서의 유일한 노드였을 경우(요소가 한 개일 경우 head와 tail이 가리키는 노드가 동일) 해당 노드를 삭제하면 tail이 가리키는 노드 또한 없어지게 된다. 이에 대해서도 정확하게 처리를 해주자.
+
+```java
+public E remove() {
+
+	Node<E> headNode = head;
+
+	if (headNode == null) {
+		throw new NoSuchElementException();
+	}
+
+	// 삭제된 노드를 반환하기 위한 임시 변수
+	E element = headNode.data;
+
+	// head의 다음 노드 
+	Node<E> nextNode = head.next;
+
+	// head 노드의 데이터들을 모두 삭제
+	head.data = null;
+	head.next = null;
+
+	// head 가 다음 노드를 가리키도록 업데이트
+	head = nextNode;
+	size--;
+
+	/**
+	 * 삭제된 요소가 리스트의 유일한 요소였을 경우
+	 * 그 요소는 head 이자 tail이었으므로 
+	 * 삭제되면서 tail도 가리킬 요소가 없기 때문에
+	 * size가 0일경우 tail도 null로 변환
+	 */
+	if(size == 0) {
+		tail = null;
+	}
+
+	return element;
+
+}
+```
+
+### 2. remove(int index) 메소드
+
+&nbsp;&nbsp;&nbsp;remove(int index) 메소드는 사용자가 원하는 특정 위치(index)를 리스트에서 찾아서 삭제하는 것이다. add(int index, E value)의 반대이다.
+
+삭제하려는 노드의 이전 노드의 next 변수를 삭제하려는 노드의 다음 노드를 가리키도록 해주면 된다. 그리고 index를 범위 밖으로 입력했을 경우의 예외 또한 던져주도록 하자.
+
+```java
+@Override
+public E remove(int index) {
+
+	// 삭제하려는 노드가 첫 번째 원소일 경우 
+	if (index == 0) {
+		return remove();
+	}
+
+	// 잘못된 범위에 대한 예외 
+	if (index >= size || index < 0) {
+		throw new IndexOutOfBoundsException();
+	}
+
+	Node<E> prevNode = search(index - 1);	// 삭제할 노드의 이전 노드 
+	Node<E> removedNode = prevNode.next;	// 삭제할 노드 
+	Node<E> nextNode = removedNode.next;	// 삭제할 노드의 다음 노드 
+
+	E element = removedNode.data;	// 삭제되는 노드의 데이터를 반환하기 위한 임시변수
+
+	// 이전 노드가 가리키는 노드를 삭제하려는 노드의 다음노드로 변경 
+	prevNode.next = nextNode;
+
+	// 데이터 삭제 
+	removedNode.next = null;
+	removedNode.data = null;
+	size--;
+
+	return element;
+
+}
+```
+
+기존에 만들어두었던 search() 메소드를 이용하면 노드를 쉽게 얻을 수 있다.
+
 
 
 ---

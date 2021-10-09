@@ -195,7 +195,7 @@ public void addLast(E value) {
 
 &nbsp;&nbsp;&nbsp;구현할 때 처리해야 할 부분이 많은데 넣으려는 위치의 앞 뒤로 링크를 새로 업데이트 해주어야 하기 때문이다.
 
-먼저 넣으려는 위치(예를들어 index = 3)의 노드와 이전의 노드를 찾아야 한다. 넣으려는 위치의 이전노드를 prev_Node라고 하고, 넣으려는 위치의 기존노드를 next_Node라고 할 때, 앞서 우리가 만든 메소드 search()를 사용하여 넣으려는 위치 - 1의 노드(prev_Node)를 찾아내고, next_Node는 prev_Node.next를 통해 찾는다. 그리고 prev_Node의 링크를 새로 추가하려는 노드로 변경하고, 새로 추가하려는 노드의 링크는 next_Node로 변경해주는 것이다.  
+먼저 넣으려는 위치(예를들어 index = 3)의 노드와 이전의 노드를 찾아야 한다. 넣으려는 위치의 이전노드를 prev_Node라고 하고, 넣으려는 위치의 기존노드를 next_Node라고 할 때, 앞서 우리가 만든 메서드 search()를 사용하여 넣으려는 위치 - 1의 노드(prev_Node)를 찾아내고, next_Node는 prev_Node.next를 통해 찾는다. 그리고 prev_Node의 링크를 새로 추가하려는 노드로 변경하고, 새로 추가하려는 노드의 링크는 next_Node로 변경해주는 것이다.  
 다만 index 변수가 잘못된 위치를 참조할 수 있으니 이에 대한 예외처리로 IndexOutOfBoundsException을 한다.
 
 ```java
@@ -242,19 +242,19 @@ public void add(int index, E value) {
 }
 ```
 
-## remove 메소드 구현
+## remove 메서드 구현
 
-&nbsp;&nbsp;&nbsp;추가해주었다면 반대로 삭제도 할 수 있어야 할테니 remove() 메소드를 구현해보자. 쉽게 생각해서 add() 메소드의 메커니즘을 반대로 생각하면 된다.
+&nbsp;&nbsp;&nbsp;추가해주었다면 반대로 삭제도 할 수 있어야 할테니 remove() 메서드를 구현해보자. 쉽게 생각해서 add() 메서드의 메커니즘을 반대로 생각하면 된다.
 
-remove 메소드의 경우 크게 3가지로 나눌 수 있다.
+remove 메서드의 경우 크게 3가지로 나눌 수 있다.
 
 - 가장 앞의 요소(head)를 삭제 - remove()
 - 특정 index의 요소를 삭제 - remove(int index)
 - 특정 요소를 삭제 - remove(Object value)
 
-기본적으로 삭제 연산의 가장 기초는 remove() 메소드로 head가 가리키는 요소, 첫 번째 요소를 삭제하는 것이다. 인덱스로 생각한다면 0 위치에 있는 요소를 말한다. 그리고 다른 remove() 메소드들을 구현할 때 자칫 잘못해서 null을 참조하거나 잘못된 참조를 하는 경우도 있으니 신중하게 작성하자.
+기본적으로 삭제 연산의 가장 기초는 remove() 메서드로 head가 가리키는 요소, 첫 번째 요소를 삭제하는 것이다. 인덱스로 생각한다면 0 위치에 있는 요소를 말한다. 그리고 다른 remove() 메서드들을 구현할 때 자칫 잘못해서 null을 참조하거나 잘못된 참조를 하는 경우도 있으니 신중하게 작성하자.
 
-### 1. remove() 메소드
+### 1. remove() 메서드
 
 &nbsp;&nbsp;&nbsp;remove()는 '가장 앞에 있는 요소'를 제거하는 것이다. 즉, head가 가리키는 요소만 없애주면 된다.
 
@@ -298,9 +298,9 @@ public E remove() {
 }
 ```
 
-### 2. remove(int index) 메소드
+### 2. remove(int index) 메서드
 
-&nbsp;&nbsp;&nbsp;remove(int index) 메소드는 사용자가 원하는 특정 위치(index)를 리스트에서 찾아서 삭제하는 것이다. add(int index, E value)의 반대이다.
+&nbsp;&nbsp;&nbsp;remove(int index) 메서드는 사용자가 원하는 특정 위치(index)를 리스트에서 찾아서 삭제하는 것이다. add(int index, E value)의 반대이다.
 
 삭제하려는 노드의 이전 노드의 next 변수를 삭제하려는 노드의 다음 노드를 가리키도록 해주면 된다. 그리고 index를 범위 밖으로 입력했을 경우의 예외 또한 던져주도록 하자.
 
@@ -337,9 +337,87 @@ public E remove(int index) {
 }
 ```
 
-기존에 만들어두었던 search() 메소드를 이용하면 노드를 쉽게 얻을 수 있다.
+기존에 만들어두었던 search() 메서드를 이용하면 노드를 쉽게 얻을 수 있다.
 
+### 3. remove(Object value) 메서드
 
+&nbsp;&nbsp;&nbsp;remove(Object value) 메서드는 사용자가 원하는 특정 요소(value)를 리스트에서 찾아서 삭제하는 것이다.   
+remove(int index) 메서드하고 동일한 메커니즘으로 작동한다. 다만 고려해야 할 점은 '삭제하려는 요소가 존재하는지'를 생각해야 한다. 삭제하려는 요소를 찾지 못했을 경우 false를 반환해주고, 찾았을 경우 remove(int index)와 동일한 삭제 방식을 사용하면 된다.
+
+```java
+@Override
+public boolean remove(Object value) {
+
+	Node<E> prevNode = head;
+	boolean hasValue = false;
+	Node<E> x = head;	// removedNode 
+
+	// value와 일치하는 노드 검색
+	for (; x != null; x = x.next) {
+		if (value.equals(x.data)) {
+			hasValue = true;
+			break;
+		}
+
+		prevNode = x;
+	}
+
+	// 일치하는 요소가 없을 경우 false 반환
+	if(x == null) {
+		return false;
+	}
+
+	// 만약 삭제하려는 노드가 head라면 기존 remove()를 사용 	
+	if (x.equals(head)) {
+		remove();
+		return true;
+	}	else {
+		// 이전 노드의 링크를 삭제하려는 노드의 다음 노드로 연결
+		prevNode.next = x.next;
+		
+		x.data = null;
+		x.next = null;
+		size--;
+
+		return true;
+	}
+}
+```
+
+## get, set, indexOf, contains 메서드 구현
+
+&nbsp;&nbsp;&nbsp;부가기능이지만 매우 중요한 메서드 몇 개를 구현해보자.
+
+### 1. get(int index) 메서드
+
+&nbsp;&nbsp;&nbsp;get()은 index로 들어오는 값을 인덱스 삼아 해당 위치에 있는 요소를 반환하는 메서드다. 그런데 생각해보면 search() 메서드를 구현해놓았다. 이를 이용하면 쉽지않을까?  
+이 둘은 약간의 차이점이 있는데 search() 메서드는 '노드'를 반환하고, get() 메서드는 '노드의 데이터'를 반환한다는 것이다. 즉 아래와 같이 손쉽게 구현할 수 있다.
+
+```java
+@Override
+public E get(int index) {
+	return search(index).data;
+}
+```
+
+그리고 search() 내부에서 잘못된 위치일 경우 예외를 던지기 때문에 따로 예외처리를 해줄 필요는 없다.
+
+### 2. set(int index, E value) 메서드
+
+&nbsp;&nbsp;&nbsp;set 메서드는 기존에 index에 위치한 데이터를 새로운 데이터(value)으로 '교체'하는 것이다. add메서드가 데이터 '추가'이면 set은 '교체'이다.  
+결과적으로 index에 위치한 데이터를 교체하는 것이기 때문에 마찬가지로 search() 메서드를 사용하여 노드를 찾아내고, 해당 노드의 데이터만 새로운 데이터로 변경해주면 된다.
+
+```java
+@Override
+public void set(int index, E value) {
+ 
+	Node<E> replaceNode = search(index);
+	replaceNode.data = null;
+	replaceNode.data = value;
+}
+```
+
+마찬가지로 잘못된 인덱스를 참조하고 있진 않은지 검사가 필요하다. 그러나 search() 메서드 안에서 인덱스 검사를 해주기 때문에 따로 구현을 하지 않는다.
 
 ---
 **Reference**

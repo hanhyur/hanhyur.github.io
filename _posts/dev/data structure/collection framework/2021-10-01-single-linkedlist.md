@@ -426,7 +426,35 @@ public void set(int index, E value) {
 
 한 가지 중요한 점은 객체끼리 비교할 때는 반드시 .equals()를 사용해야 한다. 동등연산자를 사용하면 값이 아닌 주소를 비교하기 때문에 잘못된 결과가 나오기 때문이다.
 
+```java
+@Override
+public int indexOf(Object value) {
+	int index = 0;
 
+	for(Node<E> n = head; n != null; n = n.next) {
+		if(value.equals(n.data)) {
+			return index;
+		}
+
+		index++;
+	}
+
+	return -1;
+}
+```
+
+### 4. contains(Object value) 메서드
+
+&nbsp;&nbsp;&nbsp;indexOf 메서드가 찾고자 하는 요소(value)의 '위치(index)'를 반환하는 메소드이면, contains는 찾고자 하는 요소(value)의 존재유무를 반환하는 메서드다. 찾고자 하는 요소가 존재한다면 true를, 존재하지 않는다면 false를 반환한다. ~~indexOf와 기능이 비슷하니깐 이를 쓸 수 있을 것 같다는 생각이 들었다면 하산해도 좋다...!~~
+
+해당 요소가 존재하는지를 '검사'한다는 기능이 같기 때문에 indexOf 메소드를 이용하여 음수가 아닌 수가 반환되었다면 요소가 존재한다는 뜻이고, 음수(-1)이 나왔다면 요소가 존재하지 않는다는 뜻이므로 아래와 같이 contains 메소드를 만들 수 있다.
+
+```java
+@Override
+public boolean contains(Object item) {
+	return indexOf(item) >= 0;
+}
+```
 
 ---
 **Reference**

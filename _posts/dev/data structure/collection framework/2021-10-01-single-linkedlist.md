@@ -456,6 +456,55 @@ public boolean contains(Object item) {
 }
 ```
 
+## get, set, indexOf, contains 메서드 구현
+
+### 1. size() 메서드
+
+&nbsp;&nbsp;&nbsp;모든 리스트 자료구조는 동적 할당을 전제로 한다. 즉 요소의 삽입, 삭제가 많아지면 사용자가 리스트에 담긴 요소의 개수를 기억하기 어렵다.
+거기에 리스트의 변수들은 private 접근제한자인데 size 또한 마찬가지다. 이는 size를 접근할 수 있게 될 경우 사용자가 임의로 데이터를 조작할 수 있기 때문이다. 따라서 size 변수의 값을 반환해주는 size() 메서드를 별도로 만들어주는 것이다.
+
+```java
+@Override
+public int size() {
+	return size;
+}
+```
+
+### 2. isEmpty() 메서드
+
+&nbsp;&nbsp;&nbsp;isEmpty() 메서드는 현재 ArrayList에 요소가 단 하나라도 존재하는지 확인하는 메서드이다. 리스트가 비어있다면 true, 그 어떤 요소라도 하나가 존재한다면 false를 반환한다. 앞에서 구현한 size가 요소의 개수이므로 size가 0인지 아닌지만 확인하면 된다. 굳이 배열을 모두 순회할 필요가 없다.
+
+```java
+@Override
+public boolean isEmpty() {
+	return size == 0;
+}
+```
+
+3. clear() 메서드
+
+&nbsp;&nbsp;&nbsp;clear()는 이름에서 유추할 수 있듯이 모든 요소를 비우는 메서드이다. 리스트에 요소를 담아두었다가 초기화가 필요할 때 사용하면 된다. 요소가 없다는 것은 size가 0이라는 뜻이므로 size를 0으로 초기화 시키는 것도 잊지말자.
+
+초기화를 시켜줄 때 객체 자체를 null로 해도 무관하지만, 요소 하나하나를 null로 해준다면 보다 명시적으로 GC에게 알릴 수 있어서 메모리 관리 효율 측면에서 조금 더 좋다.
+
+```java
+@Override
+public void clear() {
+	for(Node<E> n = head; n != null) {
+		Node<E> nextNode = n.next;
+		n.data = null;
+		n.next = null;
+		n = nextNode;
+	}
+
+	head = tail = null;
+
+	size = 0;
+}
+```
+
+
+
 ---
 **Reference**
 

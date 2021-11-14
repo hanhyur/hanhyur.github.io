@@ -481,7 +481,7 @@ public boolean isEmpty() {
 }
 ```
 
-3. clear() 메서드
+### 3. clear() 메서드
 
 &nbsp;&nbsp;&nbsp;clear()는 이름에서 유추할 수 있듯이 모든 요소를 비우는 메서드이다. 리스트에 요소를 담아두었다가 초기화가 필요할 때 사용하면 된다. 요소가 없다는 것은 size가 0이라는 뜻이므로 size를 0으로 초기화 시키는 것도 잊지말자.
 
@@ -503,6 +503,101 @@ public void clear() {
 }
 ```
 
+## clone, toArray, sort 메서드 구현
+
+&nbsp;&nbsp;&nbsp;이번에 구현해 볼 메서드들은 중요하지는 않은 부분들이다. 하지만 더 많은 기능을 원한다면 추가하는 것을 권장하는 메서드들이다.
+
+### 1. clone() 메서드
+
+&nbsp;&nbsp;&nbsp;사용하고 있던 LinkedList를 새로 복제하고 싶을 때 사용하는 메서드이다. 앞서 언급했었지만 단순히 `=` 연산자를 사용해서 객체를 복사하게 되면 주소를 복사하는 것이기 때문에 복사한 객체의 데이터를 수정하면 원본 객체에게도 영향이 가게된다<sup>[1](#footnote_1)</sup>.
+
+따라서 우리는 깊은 복사를 해야하는데, 이 때 사용되는 것이 clone() 메서드이다. Object에 있는 메서드지만 접근제어자가 protected로 되어있어 Cloneable 인터페이스를 Implement 해주어야 한다. 그렇지 않으면 CloneNotSupportedException 에러가 발생하게 된다.
+우리가 처음 생성했던 `public class SinglyLinkedList<E> implements List<E>`에 Cloneable을 추가해주도록 하자. 그리고 난 후 clone() 메서드를 작성하자.
+
+```java
+public Object clone() throws CloneNotSupportedException {
+
+	@SuppressWarnings("unchecked")
+	SinglyLinkedList<? super E> clone = (SinglyLinkedList<? super E>) super.clone();
+
+	clone.head = null;
+	clone.tail = null;
+	clone.size = 0;
+
+	for(Node<E> n = head; n != null; n = n.next) {
+		clone.addLast(n.data);
+	}
+
+	return clone;
+}
+```
+
+super.clone()은 객체의 내부까지 데이터가 복제되지 않기 때문에(얕은 복사) 새로 만들어진 객체 내부에 데이터를 새롭게 설정해주어야 한다.
+따라서, 각 노드를 끊고 처음부터 끝까지 현재 리스트의 데이터를 clone 리스트에 넣어주어야 한다.
+
+조금 더 살펴보자면, super.clone() 자체가 생성자와 같은 역할을 하고 얕은 복사를 통해 new SinglyLinkedList()를 호출하는 셈이다. 제대로 복사하려면 clone한 리스트의 array 또한 새롭게 생성하여 해당 배열에 copy 해주어야 한다.
+
+이렇게 작성된 clone()을 사용하여 테스트해보면 원본에 영향을 주지 않고 복제되는 것을 확인할 수 있다.
+
+### 2. toArray() 메서드
+
+&nbsp;&nbsp;&nbsp;toArray() 메서드는 ArrayList에서 구현한 바와 같이 두 가지가 있다.
+하나는 아무런 인자 없이 현재 있는 리스트를 객체배열(Object[])로 반환해주는 <b>Object[] toArray()</b> 메서드이고, 다른 하나는 리스트를 이미 생성된 다른 배열에 복사해주고자 할 때 사용하는 <b>T[] toArray(T[] a)</b> 메서드이다. 
+
+두 가지를 조금씩 살펴보자면, 먼저 `Object[] toArray()`의 경우 해당 LinkedList에 있는 요소의 개수만큼 정확하게 배열의 크기가 할당되어 반환된다. `T[] toArray(T[] a)`의 경우 객체 클래스로 상속관계에 있는 타입이거나 Wrapper와 같이 데이터 타입을 유연하게 캐스팅할 여지가 있다.
+
+중요한 점은 `T[] toArray(T[] a)`의 경우 특정 타입의 객체 배열로 받고 싶은 경우 ArrayList의 배열 생성방식과 차이를 보인다. ArrayList에서는 내부에서 데이터를 Object[] 배열에 담았기 때문에 데이터 복사가 쉬웠지만, SinglyLinkedList의 경우 '노드'라는 객체에 데이터를 담고있는 연결리스트이다. 때문에 노드 자체가 Interger, String과 같은 Wrapper 클래스나, 사용자가 만든 클래스 같은 데이터를 가질 수가 없다. 즉, 노드의 data 변수가 객체 타입의 변수인 것이지 노드 자체가 객체 타입을 가지지는 못하는 것이다. 그렇기 때문에 Arrays.copyOf() 메서드나 System.arraycopy()를 사용하기 어렵다.
+
+따라서 Array 클래스에 있는 newInstance 메서드를 사용할 것이다. 이에 대한 내용은 [공식문서](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/reflect/Array.html)를 참조하도록 하자.
+
+이제 두 메서드 모두 구현해보자.
+
+```java
+public Object[] toArray() {
+	Object[] array = new Object[size];
+
+	int idx = 0;
+
+	for(Node<E> n = head; n != null; n = n.next) {
+		array[idx++] = (E) n.data;
+	}
+
+	return array;
+}
+
+@SuppressWarnings("unchecked")
+public <T> T[] toArray(T[] a) {
+	if(a.length < size) {
+		a = (T[]) java.lang.reflect.Array.newInstance(a.getClass().getComponentType(), size);
+	}
+
+	int i = 0;
+	
+	Object[] result = a;
+
+	for(Node<E> n = head; n != null; n = n.next) {
+		result[i++] = n.data;
+	}
+
+	return a;
+}
+```
+
+Object[] toArray()의 경우 리스트에 있는 요소의 개수(size)만큼 복사하여 Object[] 배열을 반환해주는 메서드다. Object가 최상위 타입이기 때문에 배열에 데이터를 그대로 담아 반환해주기만 하면 된다.
+
+T[] toArray(T[] a)의 경우 제네릭 메서드로, 사전에 생성했던 SinglyLinkedList의 E 타입과는 다른 제네릭이다.
+상위타입으로 들어오는 객체에 대해서도 데이터를 담을 수 있도록 별도의 제네릭 메서드를 구성하는 것인데, 하위타입이 들어오는 경우 Array 클래스에서 예외를 던지기 때문에 별도의 예외를 처리해줄 필요는 없다.
+
+또한 두 가지의 경우가 존재하는데, 하나는 파라미터로 들어오는 배열 a가 현재 리스트의 요소보다 작은 경우이고 다른 하나는 반대의 경우이다.
+
+먼저 들어오는 배열(a)가 현재 리스트의 요소 개수(size)보다 작으면 size에 맞게 a의 공간을 재할당 하면서 리스트에 있던 모든 요소를 복사한다. SinglyLinkedList의 요소(데이터)가 4개 {1, 2, 3, 4} 있다고 생각해보자. 그리고 Object[] copy = new Object[1]라는 배열을 하나 만들었는데, 공간이 한 개 밖에 없다. 그러면 리스트의 요소 1개만 복사하는 것이 아니라 copy 배열의 사이즈가 1에서 4로 증가하여 copy배열에 {1, 2, 3, 4}가 모두 담기게 되는 것이다.
+
+또한 a에 대한 타입을 알기 위해 먼저 `getClass().getComponentType()`을 통해 객체가 어떤 유형의 배열인지를 파라미터를 넣고, 배열의 크기를 설정해준다. 그런 다음 얕은 복사로 Object[] 배열을 하나 만들어 해당 배열을 통해 데이터를 넣어준 다음 a를 반환한다. 얕은 복사이기 때문에 result 배열에 담으면 자동으로 a 배열에도 영향을 미치는 것을 활용한 방법이다.
+
+반대로 파라미터로 들어오는 배열의 크기가 현재 ArrayList에 있는 array보다 크다면 앞 부분부터 array에 있던 요소만 복사해서 a 배열에 넣고 반환해주면 된다
+
+### 3. sort() 메서드
+
 
 
 ---
@@ -512,4 +607,4 @@ public void clear() {
 - <https://st-lab.tistory.com/167>
 
 ---
-<a name="footnote_1">1</a> :
+<a name="footnote_1">1</a> : 이러한 복사를 얕은 복사(shallow copy)라고 한다.

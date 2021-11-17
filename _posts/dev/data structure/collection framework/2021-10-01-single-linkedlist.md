@@ -20,8 +20,8 @@ LinkedList의 경우 ArrayList와 가장 큰 차이점이 바로 '노드'라는 
 
 노드 하나의 구조는 다음과 같다.
 
-<img src="https://img1.daumcdn.net/thumb/R720n0.q80/?scode=mtistory2&fname=http%3A%2F%2Fcfile26.uf.tistory.com%2Fimage%2F23490844589151461C973D
-" width="70%" height="auto" align="center"><br/>
+<img src="https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Fblog.kakaocdn.net%2Fdn%2Fcp7eUq%2FbtqMRkxmvFQ%2FxQRxDTvO31IEfxzWPuUt11%2Fimg.png
+" width="70%" height="auto" align="center"><center><출처 : https://st-lab.tistory.com/167></center>
 
 위 구조에서 사용자가 저장할 데이터는 data 변수에 담기고, 다음에 연결할 노드를 가리키는 데이터가 담기는 부분을 reference 데이터(참조 데이터)라고 한다. 이러한 노드 여러 개가 연결되어 있는 것을 연결 리스트, 즉 LinkedList라고 한다.
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2021-11-29 20:45:00
-title: "객체 지향 설계와 스프링"
+title: "객체 지향 설계와 스프링 2부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
 category: [ spring ]

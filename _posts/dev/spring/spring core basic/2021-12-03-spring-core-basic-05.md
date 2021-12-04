@@ -116,6 +116,107 @@ class RateDiscountPolicyTest {
 
 <img src="/assets/img/springcore/core19.png" width="70%" align="center"><br/>
 
+---
+
+# 새로운 할인 정책 적용과 문제점
+
+이제 만든 할인 정책을 적용해보겠다. 할인 정책을 적용하기 위해서는 `OrderServiceImpl`에 들어가서 기존에 있던 `DiscountPolicy`인 `FixDiscountPolicy` 대신에 `RateDiscountPolicy`로 변경해주면 된다. 
+
+```java
+package hello.core.order;
+
+import hello.core.discount.DiscountPolicy;
+import hello.core.discount.FixDiscountPolicy;
+import hello.core.discount.RateDiscountPolicy;
+import hello.core.member.Member;
+import hello.core.member.MemberRepository;
+import hello.core.member.MemoryMemberRepository;
+
+public class OrderServiceImpl implements OrderService{
+
+  private final MemberRepository memberRepository = new MemoryMemberRepository();
+//  private final DiscountPolicy discountPolicy = new FixDiscountPolicy();
+  private final DiscountPolicy discountPolicy = new RateDiscountPolicy();
+
+  @Override
+  public Order createOrder(Long memberId, String itemName, int itemPrice) {
+    Member member = memberRepository.findById(memberId);
+    int discountPrice = discountPolicy.discount(member, itemPrice);
+
+    return new Order(memberId, itemName, itemPrice, discountPrice);
+  }
+}
+```
+
+여기서 문제점이 발견되었다. 지금까지 잘 따라왔다면 문제점이 무엇인지 바로 알아차렸을 것이다. 하나씩 확인해보자.
+
+- 역할과 구현을 충실하게 분리하였는가? -> OK
+- 다형성도 활용하고, 인터페이스와 구현 객체를 분리하였는가? -> OK
+- OCP, DIP 같은 객체 지향 설계 원칙을 준수하였는가? -> OK 인 것 같지만 NO
+
+우리는 분명히 객체 지향 설계 원칙을 준수하면서 작성한 것 같은데 무엇이 문제인 것일까?
+
+### DIP
+
+주문 서비스 클라이언트(`OrderServiceImpl`)는 `DiscountPolicy` 인터페이스에 의존하면서 DIP를 지킨 것 같지만 자세히 살펴보면 문제점이 보인다.  
+바로 클래스 의존관계를 분석해보면, 추상(인터페이스) 뿐만 아니라 <b>구체(구현) 클래스에도 의존</b>하고 있는 것이다.
+
+- 추상(인터페이스) 의존 : DiscountPolicy
+- 구체(구현) 클래스 : FixDiscountPolicy, RateDiscountPolicy
+
+### OCP
+
+코드를 변경하지 않고 확장할 수 있어야 하는데, 기능을 확장해서 변경하면 클라이언트 코드에 영향을 준다.
+
+클래스 다이어그램을 보면서 좀 더 살펴보자.
+
+<img src="/assets/img/springcore/core20.png" width="70%" align="center"><br/>
+
+지금까지 우리가 예상한 의존은 위의 그림과 같았다. 하지만 실제 의존관계는 아래와 같았던 것이다. 즉, DIP를 위반하고 있었다.
+
+<img src="/assets/img/springcore/core21.png" width="70%" align="center"><br/>
+
+그래서 정책을 바꾸기 위해서는 `OrderServiceImpl`의 코드도 변경을 해야하는 것이다. OCP 위반을 하는 것이다.
+
+<img src="/assets/img/springcore/core22.png" width="70%" align="center"><br/>
+
+이것을 해결하기 위해서는 우리가 처음 예상했던 것처럼 인터페이스만 의존하도록 만들어야 한다. 현재 클라이언트 코드는 인터페이스 뿐만 아니라 구체 클래스도 의존한다.
+
+```java
+package hello.core.order;
+
+import hello.core.discount.DiscountPolicy;
+import hello.core.member.Member;
+import hello.core.member.MemberRepository;
+import hello.core.member.MemoryMemberRepository;
+
+public class OrderServiceImpl implements OrderService{
+
+  private final MemberRepository memberRepository = new MemoryMemberRepository();
+  private DiscountPolicy discountPolicy;
+
+  @Override
+  public Order createOrder(Long memberId, String itemName, int itemPrice) {
+    Member member = memberRepository.findById(memberId);
+    int discountPrice = discountPolicy.discount(member, itemPrice);
+
+    return new Order(memberId, itemName, itemPrice, discountPrice);
+  }
+}
+```
+
+이렇게 바꾸면 인터페이스만 의존하도록 변경된 것이다. 하지만 여기서 테스트 코드를 실행해서 확인하면?
+
+<img src="/assets/img/springcore/core23.png" width="70%" align="center"><br/>
+
+NullPointException이 발생하는 것을 확인할 수 있다. 생각하면 당연한 것이 `discountPolicy`에 아무런 값이 할당되지 않으니 발생하는 것이다.
+
+이 문제를 어떻게 해결할 수 있을까? 이 문제를 해결하려면 누군가가 클라이언트인 `OrderServiceImpl`에 `DiscountPolicy`의 구현 객체를 대신 생성하고 주입해주어야 한다.
+
+---
+
+# 관심사의 분리
+
 
 
 ---

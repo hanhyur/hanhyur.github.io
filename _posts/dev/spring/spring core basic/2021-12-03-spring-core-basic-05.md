@@ -215,9 +215,246 @@ NullPointException이 발생하는 것을 확인할 수 있다. 생각하면 당
 
 ---
 
-# 관심사의 분리
+## 관심사의 분리
 
+애플리케이션을 하나의 공연이라고 생각하고 각각의 인터페이스를 배역이라고 할 때, 배역에 맞는 배우를 선택하는 것은 누가 하는가?  
+로미오와 줄리엣 공연을 하면 로미오 역할과 줄리엣 역할을 누가 할지는 배우가 아니라 공연 측, 공연의 기획자가 결정하는 것이다.
 
+왜 이 이야기를 하는가? 우리의 이전 코드는 배우가 직접 상대 배우를 지정하는 것과 같은 상태였다. 배우에게 많은 책임이 주어지는 것이다.
+
+### 관심사를 분리하자
+
+배우는 본인의 역할인 배역을 수행하는 것에만 집중해야 한다. 디카프리오는 어떤 여자 주인공이 선택되더라도 똑같이 공연을 할 수 있어야 한다.
+공연을 구성하고, 담당 배우를 섭외하고, 역할에 맞는 배우를 지정하는 책임을 담당하는 별도의 <b>"공연 기획자"</b>가 나올 시점이다.
+공연 기획자를 만들고, 배우와 공연 기획자의 책임을 확실히 분리해야 한다.
+
+## AppConfig 등장
+
+애플리케이션의 전체 동작 방식을 구성(config)하기 위해, <b>구현 객체를 생성하고 연결</b>하는 책임을 가지는 별도의 설정 클래스를 만든다.
+
+```java
+package hello.core;
+
+import hello.core.discount.FixDiscountPolicy;
+import hello.core.member.MemberService;
+import hello.core.member.MemberServiceImpl;
+import hello.core.member.MemoryMemberRepository;
+import hello.core.order.OrderService;
+import hello.core.order.OrderServiceImpl;
+
+public class AppConfig {
+
+  public MemberService memberService() {
+    return new MemberServiceImpl(new MemoryMemberRepository());
+  }
+
+  public OrderService orderService() {
+    return new OrderServiceImpl(new MemoryMemberRepository(), new FixDiscountPolicy());
+  }
+
+}
+```
+
+`AppConfig`는 애플리케이션의 실제 동작에 필요한 구현 객체들을 생성한다. 그리고 생성한 객체 인스턴스의 참조(레퍼런스)를 생성자를 통해서 주입(연결)해준다.
+
+```java
+package hello.core.member;
+
+public class MemberServiceImpl implements MemberService {
+
+  private final MemberRepository memberRepository;
+
+  public MemberServiceImpl(MemberRepository memberRepository) {
+    this.memberRepository = memberRepository;
+  }
+
+  @Override
+  public void join(Member member) {
+    memberRepository.save(member);
+  }
+
+  @Override
+  public Member findMember(Long memberId) {
+    return memberRepository.findById(memberId);
+  }
+
+}
+```
+
+```java
+package hello.core.order;
+
+import hello.core.discount.DiscountPolicy;
+import hello.core.member.Member;
+import hello.core.member.MemberRepository;
+import hello.core.member.MemoryMemberRepository;
+
+public class OrderServiceImpl implements OrderService{
+
+  private final MemberRepository memberRepository;
+  private final DiscountPolicy discountPolicy;
+
+  public OrderServiceImpl(MemberRepository memberRepository, DiscountPolicy discountPolicy) {
+    this.memberRepository = memberRepository;
+    this.discountPolicy = discountPolicy;
+  }
+
+  @Override
+  public Order createOrder(Long memberId, String itemName, int itemPrice) {
+    Member member = memberRepository.findById(memberId);
+    int discountPrice = discountPolicy.discount(member, itemPrice);
+
+    return new Order(memberId, itemName, itemPrice, discountPrice);
+  }
+}
+```
+
+이제 생성자를 만들어주었다. 설계의 변경으로 더 이상 구현체에 의존을 하지 않게 되었고, 각각의 입장에서는 어떤 구현체가 들어올지 알 수 없다. 단지 실행만 되면 되는 것이다.
+
+<img src="/assets/img/springcore/core24.png" width="70%" align="center"><br/>
+
+DIP가 완성되었다. `MemberServiceImpl`은 `MemberRepository`인 추상에만 의존하면 된다. 구체 클래스는 더 이상 몰라도 된다. 관심사의 분리가 이루어진 것이다.
+
+## AppConfig 실행
+
+실제 적용하고 실행해서 결과를 확인해보자.
+
+```java
+package hello.core;
+
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemberService;
+
+public class MemberApp {
+
+  public static void main(String[] args) {
+    AppConfig appConfig = new AppConfig();
+    MemberService memberService = appConfig.memberService();
+    Member member = new Member(1L, "memberA", Grade.VIP);
+    memberService.join(member);
+
+    Member findMember = memberService.findMember(1L);
+    System.out.println("new member = " + member.getName());
+    System.out.println("find member = " + findMember.getName());
+  }
+
+}
+```
+
+기존에는 `memberService`를 직접 만들었지만, 이제는 `AppConfig`로부터 의존관계를 주입받는다. `OrderApp`도 수정해주자.
+
+```java
+package hello.core;
+
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemberService;
+import hello.core.order.Order;
+import hello.core.order.OrderService;
+
+public class OrderApp {
+
+  public static void main(String[] args) {
+    AppConfig appConfig = new AppConfig();
+    MemberService memberService = appConfig.memberService();
+    OrderService orderService = appConfig.orderService();
+
+    Long memberId = 1L;
+    Member member = new Member(memberId, "memberA", Grade.VIP);
+    memberService.join(member);
+
+    Order order = orderService.createOrder(memberId, "itemA", 10000);
+
+    System.out.println("order = " + order);
+    System.out.println("order.calculatePrice = " + order.calculatePrice());
+  }
+
+}
+```
+
+<img src="/assets/img/springcore/core25.png" width="70%" align="center"><br/>
+
+둘 다 정상적으로 실행되는 것을 확인할 수 있다. 물론 여기서 끝이 아니라 테스트 코드도 수정해주자.
+
+```java
+package hello.core.member;
+
+import hello.core.AppConfig;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class MemberServiceTest {
+
+  MemberService memberService;
+
+  @BeforeEach
+  public void beforeEach() {
+    AppConfig appConfig = new AppConfig();
+    memberService = appConfig.memberService();
+  }
+
+  @Test
+  void join() {
+    //given
+    Member member = new Member(1L, "memberA", Grade.VIP);
+
+    //when
+    memberService.join(member);
+    Member findMember = memberService.findMember(1L);
+
+    //then
+    Assertions.assertThat(member).isEqualTo(findMember);
+
+  }
+
+}
+```
+
+```java
+package hello.core.order;
+
+import hello.core.AppConfig;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemberService;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+public class OrderServiceTest {
+
+  MemberService memberService;
+  OrderService orderService;
+
+  @BeforeEach
+  public void beforeEach() {
+    AppConfig appConfig = new AppConfig();
+    memberService = appConfig.memberService();
+    orderService = appConfig.orderService();
+  }
+
+  @Test
+  void createOrder() {
+    Long memberId = 1L;
+    Member member = new Member(memberId, "memberA", Grade.VIP);
+    memberService.join(member);
+
+    Order order = orderService.createOrder(memberId, "itemA", 10000);
+    Assertions.assertThat(order.getDiscountPrice()).isEqualTo(1000);
+  }
+
+}
+```
+
+`@BeforeEach`는 테스트 코드가 실행되기 전에 먼저 호출된다. 수정을 하고 난 후 실행해보면 정상적으로 작동하는 것을 확인할 수 있다.
+
+<img src="/assets/img/springcore/core26.png" width="70%" align="center"><br/>
+
+---
+
+정리하자면 AppConfig는 공연 기획자다. 배역에 맞는 담당 배우를 선택하듯이 구체 클래스를 선택하고, 애플리케이션이 어떻게 동작할지 전체 구성을 책임진다.
 
 ---
 <a name="footnote_1">1</a> : 애자일 소프트웨어 개발 선언 https://agilemanifesto.org/iso/ko/manifesto.html

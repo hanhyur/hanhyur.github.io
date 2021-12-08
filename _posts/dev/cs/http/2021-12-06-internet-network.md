@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2021-12-06 22:32:00
-title: "인터넷 네트워크 1부"
+title: "인터넷 네트워크"
 description: "모든 개발자를 위한 HTTP 웹 기본 지식"
 subject: CS
 category: [ cs ]

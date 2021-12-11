@@ -104,3 +104,41 @@ HTTP는 기본적으로 연결을 유지하지 않는 모델이다. 일반적으
 
 ---
 
+## HTTP 메세지
+
+HTTP는 요청 메세지와 응답 메세지의 구조가 조금 다르게 생겼다. HTTP 메세지의 전체적인 구조는 아래와 같다.
+
+<img src="/assets/img/http/http10.png" width="70%" align="center"><br/>
+
+여기서 공백라인은 무조건 존재해야 한다.
+
+이제 요청과 응답 메세지를 확인해보자.
+
+<img src="/assets/img/http/http11.png" width="70%" align="center"><br/>
+
+### 시작 라인
+
+시작 라인은 크게 request-line과 status-line으로 되어 있다. 요청 메세지는 request-line이라고 한다.
+
+request-line은 method SP(공백) request-target SP HTTP-version CRLF(엔터)의 형태를 가지고 있다.
+
+HTTP Method는 GET, POST, PUT, DELETE...등등이 있는데, 서버가 수행해야 할 동작을 지정하는 것이다. 
+
+request-target(요청 대상)은 절대 경로, absolute-path로 시작해서 쿼리가 들어간다. absolute-path\[?query]
+
+마지막에 HTTP version이 들어간다.
+
+응답은 status-line으로 HTTP-version SP status-code SP reason-phrase CRLF의 형태를 가진다.
+
+status-code, 상태 코드는 굉장히 중요한데 요청의 성공과 실패를 나타낸다. ex) 200, 400, 500 등등
+
+### HTTP 헤더
+
+헤더 필드는 field-name ":" OWS(띄어쓰기 허용) field-value OWS의 형태를 가진다. field-name은 대소문자 구분이 없다.
+
+이 헤더의 용도는 HTTP 전송에 필요한 모든 부가정보를 가지고 있다. ex) 메세지 바디의 내용, 크기, 압축, 인증, 요청 클라이언트 정보, 서버 애플리케이션 정보, 캐시 관리 정보 등등...
+
+### HTTP 메세지 바디
+
+실제 전송할 데이터가 들어있다. byte로 표현할 수 있는 모든 데이터가 들어갈 수 있다.
+

@@ -118,7 +118,7 @@ class RateDiscountPolicyTest {
 
 ---
 
-# 새로운 할인 정책 적용과 문제점
+## 새로운 할인 정책 적용과 문제점
 
 이제 만든 할인 정책을 적용해보겠다. 할인 정책을 적용하기 위해서는 `OrderServiceImpl`에 들어가서 기존에 있던 `DiscountPolicy`인 `FixDiscountPolicy` 대신에 `RateDiscountPolicy`로 변경해주면 된다. 
 

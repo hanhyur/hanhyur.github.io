@@ -93,7 +93,53 @@ class ApplicationContextInfoTest {
 }
 ```
 
-`ac.getBeanDefinitionNames()`을 통해서 빈에 정의된 이름을 가져올 수 있습니다. 정의된 이름을 가져와서 그대로 출력해보겠습니다.
+`ac.getBeanDefinitionNames()`을 통해서 빈에 정의된 이름을 가져올 수 있습니다. 그리고 ` ac.getBean()`을 사용하여 빈 이름으로 빈 객체(인스턴스)를 조회할 수 있습니다.
+
+정의된 이름을 가져와서 그대로 출력해보겠습니다.
 
 <img src="/assets/img/springcore/core36.png" width="70%" align="center"><br/>
+
+빨간 테두리에 있는 내용들은 스프링이 내부적으로 자체 확장을 위해 사용하는 빈입니다. 초록 테두리에 appConfig가 있는데 appConfig도 스프링 빈으로 등록됩니다. 그리고 파란 테두리에 있는 빈들이 등록한 것들입니다.
+
+하지만 이렇게 섞여있으면 불편하고 직접 짠 코드만 보고 싶으니 다음과 같은 코드를 추가하겠습니다.
+
+```java
+...
+
+class ApplicationContextInfoTest {
+
+  ...
+
+  @Test
+  @DisplayName("애플리케이션 빈 출력하기")
+  void findApplicationBean() {
+    String[] beanDefinitionNames = ac.getBeanDefinitionNames();
+
+    for (String beanDefinitionName : beanDefinitionNames) {
+      BeanDefinition beanDefinition = ac.getBeanDefinition(beanDefinitionName);
+
+      // Role ROLE_APPLICATION : 직접 등록한 애플리케이션 빈
+      // Role ROLE_INFRASTRUCTURE : 스프링이 내부에서 사용하는 빈
+     if(beanDefinition.getRole() == BeanDefinition.ROLE_APPLICATION) {
+        Object bean = ac.getBean(beanDefinitionName);
+        System.out.println("name = " + beanDefinitionName + " object = " + bean);
+      }
+
+    }
+  }
+
+}
+```
+
+`BeanDefinition`는 빈 하나하나에 대한 메타정보이고 `beanDefinitionName`을 이용해서 하나하나 꺼낼 수 있습니다. `beanDefinition.getRole()`은 3가지가 있는데 그 중에서 주로 `BeanDefinition.ROLE_APPLICATION`이 사용됩니다. `ROLE_APPLICATION`은 개발하기 위해서 직접 등록한 빈입니다.
+
+이렇게 작성하고 실행하면 직접 등록한 5개만 출력됩니다.
+
+<img src="/assets/img/springcore/core37.png" width="70%" align="center"><br/>
+
+출력 내용을 보면 각각에 맞게 등록된 것을 볼 수 있습니다. 참고로 `ROLE_INFRASTRUCTURE`는 스프링이 내부에서 사용하는 빈입니다.
+
+---
+
+## 스프링 빈 조회 - 기본
 

@@ -97,7 +97,7 @@ class ApplicationContextInfoTest {
 
 정의된 이름을 가져와서 그대로 출력해보겠습니다.
 
-<img src="/assets/img/springcore/core36.png" width="70%" align="center"><br/>
+<img src="/assets/img/springcore/core36.png" width="100%" align="center"><br/>
 
 빨간 테두리에 있는 내용들은 스프링이 내부적으로 자체 확장을 위해 사용하는 빈입니다. 초록 테두리에 appConfig가 있는데 appConfig도 스프링 빈으로 등록됩니다. 그리고 파란 테두리에 있는 빈들이 등록한 것들입니다.
 
@@ -135,7 +135,7 @@ class ApplicationContextInfoTest {
 
 이렇게 작성하고 실행하면 직접 등록한 5개만 출력됩니다.
 
-<img src="/assets/img/springcore/core37.png" width="70%" align="center"><br/>
+<img src="/assets/img/springcore/core37.png" width="80%" align="center"><br/>
 
 출력 내용을 보면 각각에 맞게 등록된 것을 볼 수 있습니다. 참고로 `ROLE_INFRASTRUCTURE`는 스프링이 내부에서 사용하는 빈입니다.
 

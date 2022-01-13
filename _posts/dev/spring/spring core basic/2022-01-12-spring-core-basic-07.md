@@ -64,3 +64,36 @@ ApplicationContext applicationContext = new AnnotationConfigApplicationContext(A
 
 ## 컨테이너에 등록된 모든 빈 조회
 
+컨테이너에 등록한 빈들이 제대로 등록이 되었는지 테스트 코드로 작성해서 확인을 해보겠습니다. 참고로 JUnit5부터는 public을 생략할 수 있습니다.
+
+```java
+package hello.core.beanfind;
+
+import hello.core.AppConfig;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+class ApplicationContextInfoTest {
+
+  AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+
+  @Test
+  @DisplayName("모든 빈 출력하기")
+  void findAllBean() {
+    String[] beanDefinitionNames = ac.getBeanDefinitionNames();
+
+    for (String beanDefinitionName : beanDefinitionNames) {
+      Object bean = ac.getBean(beanDefinitionName);
+      System.out.println("name = " + beanDefinitionName + " object = " + bean);
+    }
+  }
+
+}
+```
+
+`ac.getBeanDefinitionNames()`을 통해서 빈에 정의된 이름을 가져올 수 있습니다. 정의된 이름을 가져와서 그대로 출력해보겠습니다.
+
+<img src="/assets/img/springcore/core36.png" width="70%" align="center"><br/>
+

@@ -267,3 +267,159 @@ class ApplicationContextBasicFindTest {
 
 ## 스프링 빈 조회 - 동일한 타입이 둘 이상
 
+스프링 빈을 타입으로 조회할 때 같은 타입의 스프링 빈이 둘 이상이면 오류가 발생합니다. 이 때는 빈 이름을 지정해주면 됩니다.
+
+참고로 `ac.getBeansOfType()`을 사용하면 해당하는 타입의 모든 빈을 조회할 수 있습니다.
+
+AppConfig를 수정할 수 없으니 편의상 테스트 코드 내부에서만 사용할 Config 클래스를 생성하겠습니다. 파라미터의 값이 다르게 들어갈 수 있기 때문에 빈의 이름이 다르고 클래스 타입이 같을 수 있습니다.
+
+```java
+...
+
+class ApplicationContextSameBeanFindTest {
+
+  AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SameBeanConfig.class);
+
+  @Configuration
+  static class SameBeanConfig {
+
+    @Bean
+    public MemberRepository memberRepository1() {
+      return new MemoryMemberRepository();
+    }
+
+    @Bean
+    public MemberRepository memberRepository2() {
+      return new MemoryMemberRepository();
+    }
+
+  }
+
+  ...
+
+}
+```
+
+이렇게 한 상태에서 다음과 같이 호출을 하면 에러가 발생합니다.
+
+```java
+  @Test
+  @DisplayName("같은 타입 둘 이상 시 중복 오류 발생")
+  void findBeanByTypeDupliacte() {
+    MemberRepository bean = ac.getBean(MemberRepository.class);
+  }
+```
+
+스프링 입장에서는 2개가 나오기 때문에 뭘 선택해야할지 모릅니다. 따라서 다음과 같은 에러를 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core39.png" width="100%" align="center"><br/>
+
+따라서 다음과 같이 코드를 변경해서 검증할 수 있습니다.
+
+```java
+  @Test
+  @DisplayName("같은 타입 둘 이상 시 중복 오류 발생")
+  void findBeanByTypeDupliacte() {
+    assertThrows(NoUniqueBeanDefinitionException.class, () -> ac.getBean(MemberRepository.class));
+  }
+```
+
+빈 이름이 중복될 때 성공하는 방법으로는 빈 이름을 지정해주는 방법이 있습니다.
+
+```java
+  @Test
+  @DisplayName("빈 이름을 지정하면 된다")
+  void findBeanByName() {
+    MemberRepository memberRepository = ac.getBean("memberRepository1", MemberRepository.class);
+    assertThat(memberRepository).isInstanceOf(MemberRepository.class);
+  }
+```
+
+마지막으로 중복된 것을 모두 꺼내고 싶을 때는 중복되는 특정 타입을 모두 조회하면 됩니다.
+
+```java
+  @Test
+  @DisplayName("특정 타입을 모두 조회")
+  void findAllBeanByType() {
+    Map<String, MemberRepository> beansOfType = ac.getBeansOfType(MemberRepository.class);
+    for (String key : beansOfType.keySet()) {
+      System.out.println("key = " + key + " value = " + beansOfType.get(key));
+    }
+
+    System.out.println("beansOfType = " + beansOfType);
+    assertThat(beansOfType.size()).isEqualTo(2);
+  }
+```
+
+`ac.getBeansOfType()`로 조회하면 Map으로 나오는 것을 볼 수 있습니다. 각각의 출력과 `beansOfType` 전체를 출력하면 다음과 같이 나오는 것을 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core40.png" width="100%" align="center"><br/>
+
+이 방법은 `Autowired`와 같이 자동으로 의존관계 주입할 때 적용되는 기능입니다.
+
+전체 테스트 코드는 다음과 같습니다.
+
+```java
+package hello.core.beanfind;
+
+import hello.core.member.MemberRepository;
+import hello.core.member.MemoryMemberRepository;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoUniqueBeanDefinitionException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import java.util.Map;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ApplicationContextSameBeanFindTest {
+
+  AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(SameBeanConfig.class);
+
+  @Configuration
+  static class SameBeanConfig {
+
+    @Bean
+    public MemberRepository memberRepository1() {
+      return new MemoryMemberRepository();
+    }
+
+    @Bean
+    public MemberRepository memberRepository2() {
+      return new MemoryMemberRepository();
+    }
+
+  }
+
+  @Test
+  @DisplayName("같은 타입 둘 이상 시 중복 오류 발생")
+  void findBeanByTypeDupliacte() {
+    assertThrows(NoUniqueBeanDefinitionException.class, () -> ac.getBean(MemberRepository.class));
+  }
+
+  @Test
+  @DisplayName("빈 이름을 지정하면 된다")
+  void findBeanByName() {
+    MemberRepository memberRepository = ac.getBean("memberRepository1", MemberRepository.class);
+    assertThat(memberRepository).isInstanceOf(MemberRepository.class);
+  }
+
+  @Test
+  @DisplayName("특정 타입을 모두 조회")
+  void findAllBeanByType() {
+    Map<String, MemberRepository> beansOfType = ac.getBeansOfType(MemberRepository.class);
+    for (String key : beansOfType.keySet()) {
+      System.out.println("key = " + key + " value = " + beansOfType.get(key));
+    }
+
+    System.out.println("beansOfType = " + beansOfType);
+    assertThat(beansOfType.size()).isEqualTo(2);
+  }
+
+}
+```

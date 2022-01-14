@@ -143,3 +143,127 @@ class ApplicationContextInfoTest {
 
 ## 스프링 빈 조회 - 기본
 
+스프링 컨테이너에서 스프링 빈을 찾는 가장 기본적인 조회 방법은 `getBean()`이라는 메서드를 사용하는 것입니다. `getBean()`에 빈 이름과 타입을 주거나 빈 이름을 생략하고 타입만 줄 수도 있습니다.
+
+물론 조회 대상 스프링 빈이 없으면 `NoSuchBeanDefinitionException : No bean named 'xxxx' available`이라는 예외가 발생합니다.
+
+직접 코드를 작성하면서 확인해보겠습니다.
+
+```java
+package hello.core.beanfind;
+
+import hello.core.AppConfig;
+import hello.core.member.MemberService;
+import hello.core.member.MemberServiceImpl;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+class ApplicationContextBasicFindTest {
+
+  AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+
+  @Test
+  @DisplayName("빈 이름으로 조회")
+  void findBeanByName() {
+    MemberService memberService = ac.getBean("memberService", MemberService.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+
+  @Test
+  @DisplayName("이름 없이 타입으로만 조회")
+  void findBeanByType() {
+    MemberService memberService = ac.getBean(MemberService.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+
+  @Test
+  @DisplayName("구체 타입으로 조회")
+  void findBeanByName2() {
+    MemberService memberService = ac.getBean("memberService", MemberServiceImpl.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+
+  @Test
+  @DisplayName("빈 이름으로 조회 X")
+  void findBeanByNameX() {
+    // ac.getBean("xxxx", MemberService.class)
+
+    assertThrows(NoSuchBeanDefinitionException.class, () -> ac.getBean("xxxx", MemberService.class));
+  }
+}
+```
+
+테스트 코드를 하나씩 살펴보겠습니다. 먼저 빈 이름으로 조회하는 경우는 다음과 같습니다.
+
+```java
+  @Test
+  @DisplayName("빈 이름으로 조회")
+  void findBeanByName() {
+    MemberService memberService = ac.getBean("memberService", MemberService.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+```
+
+항상 검증은 `Assertions`로 합니다. `assertThat(memberService).isInstanceOf(MemberServiceImpl.class)`은 `memberService`의 인스턴스가 `MemberServiceImpl`인지 검증하는 코드입니다.
+
+이름 없이 타입으로만 조회하는 경우는 다음과 같습니다.
+
+```java
+  @Test
+  @DisplayName("이름 없이 타입으로만 조회")
+  void findBeanByType() {
+    MemberService memberService = ac.getBean(MemberService.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+```
+
+두 경우 모두 인터페이스로 조회했기 때문에 인터페이스의 구현체가 대상이었습니다. 다음과 같이 구체 타입(구현체의 타입)으로 조회할 수 있습니다.
+
+```java
+  @Test
+  @DisplayName("구체 타입으로 조회")
+  void findBeanByName2() {
+    MemberService memberService = ac.getBean("memberService", MemberServiceImpl.class);
+
+    assertThat(memberService).isInstanceOf(MemberServiceImpl.class);
+  }
+```
+
+반환 타입이 `MemberService`인데 구현체로도 조회가 가능했습니다. 스프링 빈에 등록된 인스턴스 타입을 보고 결정하기 때문에 인터페이스가 아니어도 가능한 것입니다.
+
+물론 이렇게 조회하는 것은 좋은 것은 아닙니다. 항상 역할과 구현을 구분하고 역할에 의존해야 하는데 이 코드는 구현에 의존하기 때문에 좋은 코드가 아닙니다.
+
+마지막으로 항상 테스트는 실패 테스트를 만들어야 합니다.
+
+```java
+  @Test
+  @DisplayName("빈 이름으로 조회 X")
+  void findBeanByNameX() {
+    // ac.getBean("xxxx", MemberService.class)
+
+    assertThrows(NoSuchBeanDefinitionException.class, () -> ac.getBean("xxxx", MemberService.class));
+  }
+```
+
+`ac.getBean("xxxx", MemberService.class)`로 조회하면 당연히 에러가 발생합니다. `NoSuchBeanDefinitionException` 에러가 발생하는데, 이 에러를 검증하기 위해서 `assertThrows`를 사용합니다. 
+
+`assertThrows`는 오른쪽의 `() -> ac.getBean("xxxx", MemberService.class)` 코드를 실행했을 때 해당하는 예외(`NoSuchBeanDefinitionException`)가 발생해야 성공합니다.
+
+작성한 테스트 코드를 모두 실행해보면 성공하는 것을 확인할 수 있습니다.
+
+<img src="/assets/img/springcore/core38.png" width="70%" align="center"><br/>
+
+---
+
+## 스프링 빈 조회 - 동일한 타입이 둘 이상
+

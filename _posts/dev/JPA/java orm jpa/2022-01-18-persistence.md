@@ -1,7 +1,7 @@
 ---
 layout: post
 date: 2022-01-18 21:29:00
-title: "영속성 컨텍스트"
+title: "영속성 관리 - 내부 동작 방식 1부"
 description: "자바 ORM 표준 JPA 프로그래밍"
 subject: JPA
 category: [ jpa ]
@@ -109,7 +109,7 @@ public class JpaMain {
 }
 ```
 
-<img src="/assets/img/jpa/jpa19.png" width="70%" align="center"><br/>
+<img src="/assets/img/jpa/jpa19.png" width="50%" align="center"><br/>
 
 `persist()`가 before와 after 사이에 있는데 아무런 일이 없고, before, after와 관계없이 뒤에서 쿼리가 발생했습니다.
 
@@ -209,7 +209,7 @@ public class JpaMain {
 
 객체를 생성하면서 동시에 조회를 해서 select 쿼리가 발생하는지 확인해보겠습니다. 만일 DB에서 찾는 과정이 있었다면 Select 쿼리가 발생했을텐데 결과에는 없습니다.
 
-<img src="/assets/img/jpa/jpa22.png" width="70%" align="center"><br/>
+<img src="/assets/img/jpa/jpa22.png" width="50%" align="center"><br/>
 
 왜냐하면 DB가 아니라 1차 캐시에 들어있는 값을 가져오기 때문입니다. 이번에는 저장하는 부분을 제외하고 조회만 해보겠습니다.
 
@@ -232,7 +232,7 @@ public class JpaMain {
 
 실제로 실행시켜 결과를 보면 select 쿼리가 한 번만 발생한 것을 볼 수 있습니다.
 
-<img src="/assets/img/jpa/jpa23.png" width="70%" align="center"><br/>
+<img src="/assets/img/jpa/jpa23.png" width="50%" align="center"><br/>
 
 처음 select 쿼리가 발생하여 가져온 101의 값을 1차 캐시에 저장하고 2번째 조회를 할 때는 DB가 아닌 1차 캐시에서 가져온 것입니다.
 
@@ -260,3 +260,166 @@ System.out.println("result = " + (findMember1 == findMember2));
 <img src="/assets/img/jpa/jpa24.png" width="70%" align="center"><br/>
 
 로직이 실행되면서 JPA 내부에서 일어나는 일을 나타낸 그림입니다.
+
+영속성 컨텍스트 내부에는 쓰기 지연 SQL 저장소라는 것이 있습니다. memberA가 저장될 때 먼저 1차 캐시에 들어가고 동시에 JPA가 엔티티를 분석해서 생성한 쿼리를 쓰기 지연 SQL 저장소에 쌓아둡니다. 이어서 memberB를 저장하면 이 때도 1차 캐시에 저장한 후 생성된 쿼리를 쓰기 지연 SQL 저장소에 넣습니다.
+
+이렇게 쓰기 지연 SQL 저장소에 쌓여있던 쿼리는 `commit()` 하는 시점에 flush<sup>[1](#footnote_1)</sup>되면서 DB에 날아갑니다. 그리고 이 때 실제 DB 트랜잭션이 commit됩니다.
+
+이 과정을 코드로 작성하면 다음과 같습니다. 먼저 생성자를 추가해주겠습니다.
+
+```java
+package hellojpa;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
+@Entity
+public class Member {
+
+  @Id
+  private Long id;
+  private String name;
+
+  public Member() {}
+
+  public Member(Long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+}
+```
+
+JPA는 기본적으로 내부에서 리플렉션 같은 것을 사용하기 때문에 동적으로 객체를 생성해야 합니다. 그래서 기본 생성자 `Member()`가 있어야 합니다. 참고로 public이 아닌 다른 레벨로 하셔도 됩니다.
+
+```java
+package hellojpa;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+public class JpaMain {
+
+  public static void main(String[] args) {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+    EntityManager em = emf.createEntityManager();
+
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
+
+    try {
+
+      // 영속
+      Member member1 = new Member(150L, "A");
+      Member member2 = new Member(160L, "B");
+
+      em.persist(member1);
+      em.persist(member2);
+
+      System.out.println("======================");
+
+      tx.commit();
+    } catch (Exception e) {
+      tx.rollback();
+    } finally {
+      em.close();
+    }
+
+    emf.close();
+  }
+
+}
+```
+
+member 객체를 생성한 후 저장하고 쿼리가 언제 날아가는지 확인하기 위해 구분 선을 추가해주었습니다. 실행한 후 결과를 보면 `tx.commit()`이 실행된 후 쿼리가 나타나는 것을 볼 수 있습니다.
+
+<img src="/assets/img/jpa/jpa25.png" width="50%" align="center"><br/>
+
+## 엔티티 수정
+
+변경 감지, Dirty Checking이라고 불리는 것을 알아보겠습니다.
+
+```java
+package hellojpa;
+
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+public class JpaMain {
+
+  public static void main(String[] args) {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("hello");
+
+    EntityManager em = emf.createEntityManager();
+
+    EntityTransaction tx = em.getTransaction();
+    tx.begin();
+
+    try {
+
+      // 영속
+      Member member = em.find(Member.class, 150L);
+      member.setName("ZZZZZ");
+
+      System.out.println("======================");
+
+      tx.commit();
+    } catch (Exception e) {
+      tx.rollback();
+    } finally {
+      em.close();
+    }
+
+    emf.close();
+  }
+
+}
+```
+
+`setName()`을 사용해서 기존 DB에 'A'라고 저장되어 있는 값을 변경했습니다. 어? 저장하기 위해서는 `persist()`를 써야하는 것 아닌가요? 아닙니다. JPA는 자바 컬렉션 다루듯이 데이터를 다루는 것이 목적입니다. 자바 컬렉션에서 값을 꺼내 변경한 후 다시 저장하지 않습니다. 마찬가지로 JPA도 변경만 해줍니다.
+
+<img src="/assets/img/jpa/jpa26.png" width="50%" align="center"><br/>
+
+어떻게 불러와서 변경만 했는데 저장까지 되는 걸까요? 
+
+<img src="/assets/img/jpa/jpa27.png" width="50%" align="center"><br/>
+
+JPA는 DB 트랜잭션 커밋 시점에 내부적으로 flush를 호출합니다. 그리고 엔티티와 스냅샷을 비교합니다.
+
+1차 캐시 안에는 스냅샷이라는 것이 있습니다. 이 스냅샷은 최초로 영속성 컨텍스트에 들어온 상태를 찍어놓은 것입니다.
+
+그렇다면 커밋이 되는 시점에 스냅샷과 엔티티를 비교해서 변경이 있다면 UPDATE SQL을 생성해서 쓰기 지연 SQL 저장소에 저장한 후 DB에 반영하고 커밋을 하게됩니다. 이러한 메커니즘을 변경 감지, Dirty Checking이라고 합니다.
+
+## 엔티티 삭제
+
+삭제는 수정과 같은 메커니즘이지만 UPDATE가 아닌 DELETE 쿼리가 발생하는 차이만 있습니다.
+
+```java
+Member member = em.find(Member.class, "memberA");
+
+em.remove("memberA")
+```
+
+---
+<a name="footnote_1">1</a> : JPA에서 쿼리가 DB로 날아가는 것

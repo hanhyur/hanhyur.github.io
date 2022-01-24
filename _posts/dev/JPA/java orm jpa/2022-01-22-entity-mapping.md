@@ -103,3 +103,66 @@ public class Member {
 `@Table`을 이용하는 것은 런타임에 직접 영향을 주지만, `@Column`을 이용하는 것은 영향을 주지 않습니다. 이처럼 DDL 생성 기능은 DDL을 자동 생성할 때만 사용되고 JPA의 실행 로직에는 영향을 주지 않습니다. 
 
 ---
+
+## 필드와 컬럼 매핑
+
+필드와 컬럼 매핑을 하기 위해서 요구사항을 추가해보겠습니다.
+
+1. 회원은 일반 회원과 관리자로 구분해야 한다.
+2. 회원 가입일과 수정일이 있어야 한다.
+3. 회원을 설명할 수 있는 필드가 있어야 한다. 이 필드는 길이 제한이 없다.
+
+```java
+package hellojpa;
+
+import javax.persistence.*;
+import java.util.Date;
+
+@Entity
+public class Member {
+
+  @Id
+  private Long id;
+
+  @Column(name = "name")
+  private String username;
+
+  private Integer age;
+
+  @Enumerated(EnumType.STRING)
+  private RoleType roleType;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date createDate;
+
+  @Temporal(TemporalType.TIMESTAMP)
+  private Date lastModifiedDate;
+
+  @Lob
+  private String description;
+
+  public Member() {}
+}
+```
+
+순서대로 살펴보면 `@Id`는 PK를 매핑한 것이고, 객체는 username인데 DB에는 name이라고 사용해야 할 경우 `@Column(name = "")`을 사용해서 지정해 줄 수 있습니다.
+
+그리고 Integer 타입을 사용했는데 이 경우 DB에서 Integer와 가장 적절한 타입으로 생성됩니다. 그리고 DB에서 enum 타입이 없지만 사용하고 싶을 경우에는 `@Enumerated`를 사용하면 됩니다.
+
+날짜 타입을 사용할 때 `@Temporal`이 있는데 DATE, TIME, TIMESTAMP 3가지로 구분됩니다. 보통 DB는 3가지를 구분해서 사용합니다.
+
+DB에 varchar를 넘어서는 큰 컨텐츠를 넣고 싶으면 `@Lob`을 사용하면 됩니다. 실행해보도록 하겠습니다.
+
+<img src="/assets/img/jpa/jpa32.png" width="60%" align="center"><br/>
+
+DB에서 사용하는 타입에 맞춰서 생성된 것을 확인할 수 있습니다.
+
+## 매핑 애노테이션 정리
+
+<img src="/assets/img/jpa/jpa32.png" width="50%" align="center"><br/>
+
+마지막의 `@Transient`는 매핑을 하고싶지 않을 때 사용합니다. 예를 들어 DB와 관계없이 메모리에서만 사용하고 싶다면 이 애노테이션을 사용하면 됩니다.
+
+### @Column
+
+가장 중요한 애노테이션입니다. 

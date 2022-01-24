@@ -45,7 +45,7 @@ tx.commit();
 
 플러시가 바로 실행되기 때문에 구분선 이전에 쿼리가 발생하는 것을 볼 수 있습니다.
 
-<img src="/assets/img/jpa/jpa28.png" width="70%" align="center"><br/>
+<img src="/assets/img/jpa/jpa28.png" width="45%" align="center"><br/>
 
 JPQL 쿼리가 실행될 때 플러시가 호출되는 이유를 간단한 예제로 알아보겠습니다.
 
@@ -112,7 +112,7 @@ public class JpaMain {
 
 `find()`를 이용해서 찾아온 엔티티를 `setName()`을 이용해서 변경했습니다. 만약 이 상태로 실행 시켰다면 select와 update가 출력되어야 합니다. 하지만 중간에 `em.detach()`를 사용해서 분리시켰습니다. 더 이상 JPA가 관리하지 않는 상태가 되었고, 그 결과 select로 가져는 왔지만 update가 되지는 않았습니다.
 
-<img src="/assets/img/jpa/jpa29.png" width="70%" align="center"><br/>
+<img src="/assets/img/jpa/jpa29.png" width="45%" align="center"><br/>
 
 물론 이러한 것을 직접 사용하는 경우는 잘 없습니다.
 

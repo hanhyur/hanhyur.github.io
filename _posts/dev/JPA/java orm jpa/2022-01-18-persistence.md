@@ -109,7 +109,7 @@ public class JpaMain {
 }
 ```
 
-<img src="/assets/img/jpa/jpa19.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa19.png" width="45%" align="center"><br/>
 
 `persist()`가 before와 after 사이에 있는데 아무런 일이 없고, before, after와 관계없이 뒤에서 쿼리가 발생했습니다.
 
@@ -209,7 +209,7 @@ public class JpaMain {
 
 객체를 생성하면서 동시에 조회를 해서 select 쿼리가 발생하는지 확인해보겠습니다. 만일 DB에서 찾는 과정이 있었다면 Select 쿼리가 발생했을텐데 결과에는 없습니다.
 
-<img src="/assets/img/jpa/jpa22.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa22.png" width="45%" align="center"><br/>
 
 왜냐하면 DB가 아니라 1차 캐시에 들어있는 값을 가져오기 때문입니다. 이번에는 저장하는 부분을 제외하고 조회만 해보겠습니다.
 
@@ -232,7 +232,7 @@ public class JpaMain {
 
 실제로 실행시켜 결과를 보면 select 쿼리가 한 번만 발생한 것을 볼 수 있습니다.
 
-<img src="/assets/img/jpa/jpa23.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa23.png" width="45%" align="center"><br/>
 
 처음 select 쿼리가 발생하여 가져온 101의 값을 1차 캐시에 저장하고 2번째 조회를 할 때는 DB가 아닌 1차 캐시에서 가져온 것입니다.
 
@@ -352,7 +352,7 @@ public class JpaMain {
 
 member 객체를 생성한 후 저장하고 쿼리가 언제 날아가는지 확인하기 위해 구분 선을 추가해주었습니다. 실행한 후 결과를 보면 `tx.commit()`이 실행된 후 쿼리가 나타나는 것을 볼 수 있습니다.
 
-<img src="/assets/img/jpa/jpa25.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa25.png" width="45%" align="center"><br/>
 
 ## 엔티티 수정
 
@@ -399,11 +399,11 @@ public class JpaMain {
 
 `setName()`을 사용해서 기존 DB에 'A'라고 저장되어 있는 값을 변경했습니다. 어? 저장하기 위해서는 `persist()`를 써야하는 것 아닌가요? 아닙니다. JPA는 자바 컬렉션 다루듯이 데이터를 다루는 것이 목적입니다. 자바 컬렉션에서 값을 꺼내 변경한 후 다시 저장하지 않습니다. 마찬가지로 JPA도 변경만 해줍니다.
 
-<img src="/assets/img/jpa/jpa26.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa26.png" width="45%" align="center"><br/>
 
 어떻게 불러와서 변경만 했는데 저장까지 되는 걸까요? 
 
-<img src="/assets/img/jpa/jpa27.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa27.png" width="60%" align="center"><br/>
 
 JPA는 DB 트랜잭션 커밋 시점에 내부적으로 flush를 호출합니다. 그리고 엔티티와 스냅샷을 비교합니다.
 

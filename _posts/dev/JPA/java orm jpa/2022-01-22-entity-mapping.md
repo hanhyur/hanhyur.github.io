@@ -153,13 +153,13 @@ public class Member {
 
 DB에 varchar를 넘어서는 큰 컨텐츠를 넣고 싶으면 `@Lob`을 사용하면 됩니다. 실행해보도록 하겠습니다.
 
-<img src="/assets/img/jpa/jpa32.png" width="60%" align="center"><br/>
+<img src="/assets/img/jpa/jpa32.png" width="45%" align="center"><br/>
 
 DB에서 사용하는 타입에 맞춰서 생성된 것을 확인할 수 있습니다.
 
 ## 매핑 애노테이션 정리
 
-<img src="/assets/img/jpa/jpa32.png" width="50%" align="center"><br/>
+<img src="/assets/img/jpa/jpa33.png" width="60%" align="center"><br/>
 
 마지막의 `@Transient`는 매핑을 하고싶지 않을 때 사용합니다. 예를 들어 DB와 관계없이 메모리에서만 사용하고 싶다면 이 애노테이션을 사용하면 됩니다.
 

@@ -20,3 +20,34 @@ comments: true
 
 따라서 모든 자바 객체의 부모 타입인 `Object`를 조회하면, 모든 스프링 빈이 조회됩니다.
 
+```java
+...
+
+public class ApplicationContextExtendsFindTest {
+
+  AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(TestConfig.class);
+
+  @Test
+  @DisplayName("부모 타입으로 조회 시 자식이 둘 이상이면 오류")
+  void findBeanByParentTypeDuplicate() {
+    DiscountPolicy bean = ac.getBean(DiscountPolicy.class);
+  }
+
+  @Configuration
+  static class TestConfig {
+
+    @Bean
+    public DiscountPolicy rateDiscountPolicy() {
+      return new RateDiscountPolicy();
+    }
+
+    @Bean
+    public DiscountPolicy fixDiscountPolicy() {
+      return new FixDiscountPolicy();
+    }
+
+  }
+
+}
+```
+

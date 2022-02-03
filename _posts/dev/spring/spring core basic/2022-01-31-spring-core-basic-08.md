@@ -110,3 +110,34 @@ public class ApplicationContextExtendsFindTest {
 
 ---
 
+## BeanFactory와 ApplicationContext
+
+<img src="/assets/img/springcore/core45.png" width="50%" align="center"><br/>
+
+<b>BeanFactory</b>라는게 도대체 뭘까요? 위 그림에서 계층구조를 볼 수 있습니다. 최상위에 `BeanFactory` 인터페이스가 있고, 이 인터페이스를 상속받은 `ApplicationContext`가 있습니다. 그러면 자연스럽게 `ApplicationContext`는 `BeanFactory`에 부가기능을 더 한것이라고 이해할 수 있습니다.  
+그리고 `AnnotationConfigApplicationContext`와 같은 구현 객체(클래스)가 존재합니다.
+
+### BeanFactory
+
+`BeanFactory`는 스프링 컨테이너의 최상위 인터페이스입니다. 그리고 스프링 빈을 관리하고 조회하는 기능이 들어있습니다. 대표적으로 제공하는 것이 `getBean()`이고, 지금까지 사용했던 대부분의 기능이 이 `BeanFactory`에서 제공하는 것입니다.
+
+### ApplicationContext
+
+`ApplicationContext`는 `BeanFactory`의 모든 기능을 상속받아서 제공하고 있습니다. 그러면 무슨 차이가 있길래 사용하는 것일까요?  
+
+애플리케이션을 개발할 때는 빈을 관리하고 조회하는 기능은 물론이고 수많은 부가기능이 필요합니다.
+
+<img src="/assets/img/springcore/core46.png" width="60%" align="center"><br/>
+
+이처럼 `ApplicationContext`는 `BeanFactory` 뿐만 아니라, `MessageSource`, `EnvironmentCapable`, `ApplicationEventPublisher`, `ResourceLoader` 등등 몇 가지 더 가지고 있습니다.
+
+각 기능을 잠깐 살펴보면 `MessageSource`는 국제화 기능으로, 한국에서 들어오면 한국어로, 영어권에서 들어오면 영어로 나오는 웹페이지가 있습니다. 이러한 국제화 기능을 파일로 구분해놓았다가 해당하는 파일을 제공하는 부가 기능입니다.  
+`EnvironmentCapable`는 로컬, 개발, 운영 등을 구분하는, 즉 환경변수와 관련된 내용을 구분해서 처리해주는 기능입니다.  
+`ApplicationEventPublisher`는 이벤트를 발행하고 구독하는 모델을 편리하게 지원해주는 기능이고, `ResourceLoader`는 파일, 클래스패스, 외부 URL 등에서 파일(리소스)을 읽어서 사용할 때 추상화해서 편리하게 쓸 수 있는 기능을 제공합니다.
+
+정리를 해보면 `ApplicationContext`는 `BeanFactory`의 기능을 상속받아서 빈 관리기능에 더해서 편리한 부가기능을 제공합니다. 그리고 `BeanFactory`는 직접 사용할 일이 거의 없습니다.  
+이러한 `BeanFactory`나 `ApplicationContext` 모두 스프링 컨테이너라고 하고, 실제로 사용하는 컨테이너는 `ApplicationContext`라고 생각하면 됩니다.
+
+---
+
+## 다양한 설정 형식 지원 - 자바코드, XML

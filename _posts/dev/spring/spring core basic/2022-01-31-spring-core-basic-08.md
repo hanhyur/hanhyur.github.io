@@ -152,4 +152,11 @@ public class ApplicationContextExtendsFindTest {
 
 ### Annotation 기반 자바 코드 설정 사용
 
-`new AnnotationConfigApplicationContext(Appconfig.class)`와 같은 형태로 계속 사용했습니다. 
+`new AnnotationConfigApplicationContext(Appconfig.class)`와 같은 형태로 계속 사용했습니다. 이처럼 `AnnotationConfigApplicationContext` 클래스를 사용하면서 자바 코드로 된 설정 정보를 넘기면 됩니다.
+
+### XML 설정 사용
+
+최근에는 스프링 부트를 많이 사용하게 되면서 XML 기반의 설정은 잘 사용하지 않습니다. 하지만 아직 많은 레거시 프로젝트들이 XML로 되어있고, XML을 사용하면 컴파일 없이 빈 설정 정보를 변경할 수 있다는 장점이 있어서 알아두면 좋습니다.  
+
+`GenericXmlApplicationContext`를 사용해서 `xml` 설정 파일을 넘겨주면 됩니다.
+

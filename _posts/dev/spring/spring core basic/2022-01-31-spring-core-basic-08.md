@@ -141,3 +141,15 @@ public class ApplicationContextExtendsFindTest {
 ---
 
 ## 다양한 설정 형식 지원 - 자바코드, XML
+
+자바코드로 설정하는 방법 외에 XML로 설정하는 방법도 있습니다.
+
+<img src="/assets/img/springcore/core47.png" width="60%" align="center"><br/>
+
+`ApplicationContext`를 구현한 것 중 하나가 `AnnotationConfigApplicationContext`인데 이것은 `AppConfig.class`를 사용했습니다. 그리고 `GenericXmlApplicationContext`라고 XML이라는 문서를 설정정보로 사용하는 것도 있습니다. 그 외에 임의로 만들어서 사용할 수도 있습니다.
+
+최근에는 자바코드 기반의 `AnnotaionConfig`를 많이 사용하고 과거에는 XML을 많이 사용했습니다.
+
+### Annotation 기반 자바 코드 설정 사용
+
+`new AnnotationConfigApplicationContext(Appconfig.class)`와 같은 형태로 계속 사용했습니다. 

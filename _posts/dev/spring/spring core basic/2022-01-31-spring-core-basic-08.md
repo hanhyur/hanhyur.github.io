@@ -160,3 +160,29 @@ public class ApplicationContextExtendsFindTest {
 
 `GenericXmlApplicationContext`를 사용해서 `xml` 설정 파일을 넘겨주면 됩니다.
 
+```java
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <bean id="memberService" class="hello.core.member.MemberServiceImpl">
+        <constructor-arg name="memberRepository" ref="memberRepository"/>
+    </bean>
+
+    <bean id="memberRepository" class="hello.core.member.MemoryMemberRepository"/>
+
+    <bean id="orderService" class="hello.core.order.OrderServiceImpl">
+        <constructor-arg name="memberRepository" ref="memberRepository"/>
+        <constructor-arg name="discountPolicy" ref="discountPolicy"/>
+    </bean>
+
+    <bean id="discountPolicy" class="hello.core.discount.RateDiscountPolicy"/>
+</beans>
+```
+
+`appConfig.xml`과 `AppConfig.java`를 비교해보면 거의 비슷한 것을 알 수 있습니다.
+
+---
+
+## 스프링 빈 설정 메타 정보 - BeanDefinition

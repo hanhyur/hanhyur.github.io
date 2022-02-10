@@ -193,3 +193,10 @@ public class ApplicationContextExtendsFindTest {
 
 XML을 읽어서 `BeanDefinition`을 만들면되고, 자바 코드를 읽어서 `BeanDefinition`을 만들면 됩니다. 스프링 컨테이너는 자바 코드인지, XML인지 신경쓰지 않습니다. 오직 `BeanDefinition`만 알면 됩니다.
 
+`BeanDefinition`을 빈 설정 메타정보라고 하는데, `@Bean` 또는 `<bean>`을 사용하면 각각 하나 당 하나의 메타정보가 생긴다고 이해하면 됩니다. 스프링 컨테이너에서는 이 메타정보를 기반으로 스프링 빈을 생성합니다.
+
+<img src="/assets/img/springcore/core48.png" width="60%" align="center"><br/>
+
+그림과 같이 스프링 컨테이너 자체는 `BeanDefinition`에만 의존합니다. 클래스 정보인지, XML 정보인지, 임의로 생성한 정보인지 상관하지 않습니다. `BeanDefinition` 자체가 인터페이스로 추상화에만 의존하도록 설계가 되어 있습니다.
+
+<img src="/assets/img/springcore/core49.png" width="60%" align="center"><br/>

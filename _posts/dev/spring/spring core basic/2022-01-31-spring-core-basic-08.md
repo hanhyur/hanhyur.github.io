@@ -186,3 +186,10 @@ public class ApplicationContextExtendsFindTest {
 ---
 
 ## 스프링 빈 설정 메타 정보 - BeanDefinition
+
+스프링 빈의 설정 메타 정보, `BeanDefinition`에 대해서 알아보겠습니다.
+
+스프링은 어떻게 이런 다양한 설정들을 지원하는 것일까요? 그 중심에서는 `BeanDefinition`이라는 추상화가 있습니다. 쉽게 이야기해서 <b>역할과 구현을 개념적으로 나눈 것</b>입니다.
+
+XML을 읽어서 `BeanDefinition`을 만들면되고, 자바 코드를 읽어서 `BeanDefinition`을 만들면 됩니다. 스프링 컨테이너는 자바 코드인지, XML인지 신경쓰지 않습니다. 오직 `BeanDefinition`만 알면 됩니다.
+

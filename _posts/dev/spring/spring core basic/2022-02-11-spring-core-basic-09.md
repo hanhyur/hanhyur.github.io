@@ -144,3 +144,43 @@ void SingletonServiceTest() {
 ---
 
 ## 싱글톤 컨테이너
+
+스프링 컨테이너는 싱글톤 패턴의 문제점을 해결하면서 객체 인스턴스를 싱글톤으로 관리합니다. 바로 스프링 빈이 싱글톤으로 관리되는 빈입니다.
+
+컨테이너 생성 과정을 생각해보면, 컨테이너는 객체를 하나만 생성해서 관리하는 것을 알 수 있습니다. 즉, 객체 인스턴스를 싱글톤으로 관리하는 것입니다. 이처럼 스프링 컨테이너는 싱글톤 컨테이너 역할을 하는데 이렇게 싱글톤 객체를 생성하고 관리하는 기능을 <b>싱글톤 레지스트리</b>라고 합니다.
+
+이러한 기능 덕분에 싱글턴 패턴의 모든 단점을 해결하면서 객체를 싱글톤으로 유지할 수 있습니다.
+
+```java
+  @Test
+  @DisplayName("스프링 컨테이너와 싱글톤")
+  void springContainer() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
+
+    MemberService memberService1 = ac.getBean("memberService", MemberService.class);
+    MemberService memberService2 = ac.getBean("memberService", MemberService.class);
+
+    // 참조값이 같은 것을 확인
+    System.out.println("memberService1 = " + memberService1);
+    System.out.println("memberService2 = " + memberService2);
+
+    // memberService1 == memberService2
+    assertThat(memberService1).isSameAs(memberService2);
+  }
+```
+
+<img src="/assets/img/springcore/core53.png" width="50%" align="center"><br/>
+
+결과에서 알 수 있듯이 처음 스프링 컨테이너에 등록한 빈을 반환해서 사용하기 때문에 같은 것을 확인할 수 있습니다. 그리고 해당 코드를 살펴보면 싱글톤과 관련된 코드가 하나도 없는 것을 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core54.png" width="50%" align="center"><br/>
+
+
+이처럼 싱글톤 컨테이너를 적용하면 고객의 요청이 올 때 마다 객체를 생성하는 것이 아니라, 이미 만들어진 객체를 공유해서 효율적으로 재사용할 수 있습니다.  
+
+스프링의 기본 빈 등록 방식은 싱글톤이지만, 싱글톤 방식'만' 지원하는 것은 아닙니다. 요청할 때마다 새로운 객체를 생성해서 반환하는 기능도 제공합니다.
+
+---
+
+## 싱글톤 방식의 주의점
+

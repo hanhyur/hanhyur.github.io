@@ -184,3 +184,77 @@ void SingletonServiceTest() {
 
 ## 싱글톤 방식의 주의점
 
+싱글톤 패턴이든, 스프링 컨테이너를 사용하든, 객체 인스턴스를 하나만 생성해서 공유하는 싱글톤 방식은 여러 클라이언트가 하나의 같은 객체 인스턴스를 공유하기 때문에 <b>stateful</b>하게 설계해서는 안됩니다.
+
+이게 무슨 말인가 하면, 무상태(stateless)하게 설계해야 하는데 특정 클라이언트에 의존적인 필드가 있어서는 안됩니다. 또한 특정 클라이언트가 값을 변경할 수 있는 필드가 있어서도 안됩니다. 그러기 위해서는 가급적 읽기만 가능해야 하는데, 필드 대신 자바에서 공유되지 않는, 지역변수, 파이미터, ThreadLocal 등을 사용해야 합니다.
+
+상태를 유지할 경우에 발생하는 문제점을 예시와 테스트코드로 보겠습니다.
+
+```java
+package hello.core.singleton;
+
+public class StatefulService {
+
+  private int price;    // 상태를 유지하는 필드
+
+  public void order(String name, int price) {
+    System.out.println("name = " + name + " price = " + price);
+
+    this.price = price;
+  }
+
+  public int getPrice() {
+    return price;
+  }
+}
+```
+
+```java
+package hello.core.singleton;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+
+class StatefulServiceTest {
+
+  @Test
+  void statefulServiceSingleton() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(TestConfig.class);
+    StatefulService statefulService1 = ac.getBean(StatefulService.class);
+    StatefulService statefulService2 = ac.getBean(StatefulService.class);
+
+    // Thread : A 사용자 10000원 주문
+    statefulService1.order("userA", 10000);
+    // Thread : B 사용자 20000원 주문
+    statefulService1.order("userB", 20000);
+    
+    // ThreadA : 사용자 A 주문 금액 조회
+    int price = statefulService1.getPrice();
+    System.out.println("price = " + price);
+
+    Assertions.assertThat(statefulService1.getPrice()).isEqualTo(20000);
+  }
+
+  static class TestConfig {
+
+    @Bean
+    public StatefulService statefulService() {
+      return new StatefulService();
+    }
+
+  }
+
+}
+```
+
+A 사용자가 10000원어치 주문을 하고 그 주문 금액을 가져와서 확인하려는데 중간에 B 사용자가 20000원으로 주문해서 끼어들었습니다. 그리고 테스트 결과를 살펴보면 가격이 B 사용자의 가격으로 변경된 것을 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core55.png" width="50%" align="center"><br/>
+
+이처럼 stateful 객체는 같은 객체이기 때문에 다른 사람이 주문을 할 때마다 그 값으로 계속 변경됩니다. 특정 클라이언트가 공유하는 필드 값을 변경하는 것입니다.  
+
+따라서, 항상 스프링 빈은 무상태(stateless)로 설계해야합니다.
+

@@ -211,3 +211,125 @@ public class AutoAppConfigTest {
 ---
 
 ## 필터
+
+필터에는 컴포넌트 스캔 대상을 추가로 지정하는 `includeFilters`와 컴포넌트 스캔에서 제외할 대상을 지정하는 `excludeFilters`가 있습니다.
+
+먼저 컴포넌트 스캔 대상에 추가할 애노테이션과 제외할 애노테이션을 만듭니다.
+
+```java
+package hello.core.scan.filter;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MyIncludeComponent {
+}
+```
+
+```java
+package hello.core.scan.filter;
+
+import java.lang.annotation.*;
+
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MyExcludeComponent {
+}
+```
+
+이어서 클래스도 간단하게 만들어줍니다.
+
+```java
+package hello.core.scan.filter;
+
+@MyIncludeComponent
+public class BeanA {
+}
+```
+
+```java
+package hello.core.scan.filter;
+
+@MyExcludeComponent
+public class BeanB {
+}
+```
+
+각각의 클래스는 포함하는 애노테이션 `@MyIncludeComponent`와 제외하는 애노테이션 `@MyExcludeComponent`가 적용되어 있습니다.
+
+이제 테스트코드를 생성하여 테스트를 해보겠습니다.
+
+```java
+package hello.core.scan.filter;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.FilterType;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.springframework.context.annotation.ComponentScan.*;
+
+public class ComponentFilterAppConfigTest {
+
+  @Test
+  void filterScan() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(ComponentFilterAppConfig.class);
+    BeanA beanA = ac.getBean("beanA", BeanA.class);
+    assertThat(beanA).isNotNull();
+
+    assertThrows(NoSuchBeanDefinitionException.class, () -> ac.getBean("beanB", BeanB.class));
+  }
+
+  @Configuration
+  @ComponentScan(
+      includeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyIncludeComponent.class),
+      excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyExcludeComponent.class)
+  )
+  static class ComponentFilterAppConfig {
+  }
+}
+```
+
+`includeFilters`에 `@MyIncludeComponent` 애노테이션을 추가해서 BeanA는 스프링 빈에 등록이 되지만,
+`excludeFilters`에 `@MyExcludeComponent` 애노테이션이 추가된 BeanB는 스프링 빈에 등록되지 않습니다.
+
+이렇게 FilterType은 5가지 옵션이 있습니다.
+- ANNOTATION: 기본값, 애노테이션을 인식해서 동작합니다.
+ex) `org.example.SomeAnnotation`
+- ASSIGNABLE_TYPE: 지정한 타입과 자식 타입을 인식해서 동작합니다.
+ex) `org.example.SomeClass`
+- ASPECTJ: AspectJ 패턴에 사용합니다.
+ex) `org.example..*Service+`
+- REGEX: 정규 표현식입니다.
+ex) `org\.example\.Default.*`
+- CUSTOM: `TypeFilter`이라는 인터페이스를 구현해서 처리합니다.
+ex) `org.example.MyTypeFilter`
+
+만약, BeanA도 제외하고 싶다면 다음과 같이 추가할 수 있습니다.
+
+```java
+  @Configuration
+  @ComponentScan(
+      includeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyIncludeComponent.class),
+      excludeFilters = @Filter(type = FilterType.ANNOTATION, classes = MyExcludeComponent.class),
+      @Filter(type = FilterType.ASSIGNABLE_TYPE, classes = BeanA.class)
+  )
+  static class ComponentFilterAppConfig {
+  }
+```
+
+사실 `@Component`면 충분하기 때문에, `includeFilters`를 사용할 일은 거의 없습니다. `excludeFilters`는 여러가지 이유때문에 간혹 사용할 때가 있습니다.
+
+최근 스프링 부트는 컴포넌트 스캔을 기본으로 제공하는데, 옵션을 변경하면서 사용하기 보다는 디폴트에 최대한 맞춰서 사용하는 것이 좋습니다.
+
+---
+
+## 중복 등록과 충돌

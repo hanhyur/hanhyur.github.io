@@ -302,15 +302,16 @@ public class ComponentFilterAppConfigTest {
 `excludeFilters`에 `@MyExcludeComponent` 애노테이션이 추가된 BeanB는 스프링 빈에 등록되지 않습니다.
 
 이렇게 FilterType은 5가지 옵션이 있습니다.
-- ANNOTATION: 기본값, 애노테이션을 인식해서 동작합니다.
+
+- ANNOTATION : 기본값, 애노테이션을 인식해서 동작합니다.  
 ex) `org.example.SomeAnnotation`
-- ASSIGNABLE_TYPE: 지정한 타입과 자식 타입을 인식해서 동작합니다.
+- ASSIGNABLE_TYPE : 지정한 타입과 자식 타입을 인식해서 동작합니다.  
 ex) `org.example.SomeClass`
-- ASPECTJ: AspectJ 패턴에 사용합니다.
+- ASPECTJ : AspectJ 패턴에 사용합니다.  
 ex) `org.example..*Service+`
-- REGEX: 정규 표현식입니다.
+- REGEX : 정규 표현식입니다.  
 ex) `org\.example\.Default.*`
-- CUSTOM: `TypeFilter`이라는 인터페이스를 구현해서 처리합니다.
+- CUSTOM : `TypeFilter`이라는 인터페이스를 구현해서 처리합니다.  
 ex) `org.example.MyTypeFilter`
 
 만약, BeanA도 제외하고 싶다면 다음과 같이 추가할 수 있습니다.
@@ -333,3 +334,64 @@ ex) `org.example.MyTypeFilter`
 ---
 
 ## 중복 등록과 충돌
+
+컴포넌트 스캔에서 같은 이름의 빈을 등록하면 어떻게 될까요? 다음 두 가지 상황은 생각해보겠습니다.
+
+1. 자동 빈 등록 vs 자동 빈 등록
+2. 수동 빈 등록 vs 자동 빈 등록
+
+### 자동 빈 등록 vs 자동 빈 등록
+
+다음과 같이 `MemberServiceImpl`과 `OrderServiceImpl`의 빈 이름을 동일하게 설정해보겠습니다.
+
+```java
+@Component("Service")
+public class MemberServiceImpl implements MemberService {
+    ...
+```
+
+```java
+@Component("Service")
+public class OrderServiceImpl implements OrderService {
+    ...
+```
+
+그리고 자동으로 등록해주는 테스트 코드 `AutoAppConfigTest`를 실행시키면 다음과 같이 `ConflictingBeanDefinitionException` 예외가 발생한 것을 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core67.png" width="70%" align="center"><br/>
+
+### 수동 빈 등록 vs 자동 빈 등록
+
+빈이 자동 등록될 때 클래스 명에서 맨 앞글자를 소문자로 바꾼 이름으로 등록된다고 했습니다. 그렇다면 그것과 같은 이름을 가진 빈을 수동으로 추가해주고 어떻게 되는지 확인해보겠습니다.
+
+```java
+@Component
+public class MemoryMemberRepository implements MemberRepository {
+    ...
+```
+
+```java
+public class AutoAppConfig {
+
+  @Bean(name = "memoryMemberRepository")
+  MemberRepository memberRepository() {
+    return new MemoryMemberRepository();
+  }
+  
+}
+```
+
+<img src="/assets/img/springcore/core68.png" width="70%" align="center"><br/>
+
+실행을 해보니 예상과 다르게 성공한 것을 볼 수 있습니다. 성공한 로그를 잘 살펴보면 오버라이딩이라는 단어를 볼 수 있습니다.  
+이 경우 수동 빈 등록이 우선권을 가지고 수동 빈이 자동 빈을 오버라이딩 해버립니다.
+
+여기서 한 가지 생각해보아야 할 것이 있습니다. 개발자가 이러한 결과를 기대하고 의도적으로 만들었다면, 자동보다 수동이 우선권을 가지는 것이 좋습니다. 하지만 현실에서는 개발자가 의도적으로 이러한 결과를 만들기보다는 여러 설정이 꼬여서 만들어지는 경우가 대부분입니다.  
+이렇게 되면 정말 찾기 어려운 버그, 잡기 어려운 애매한 버그가 되버립니다.
+
+최근 스프링 부트에서는 수동 빈 등록과 자동 빈 등록이 충돌하면 오류가 발생하도록 기본 값을 바꾸었습니다.  
+스프링 부트인 `CoreApplication`을 실행해보면 다음과 같은 오류를 볼 수 있습니다.
+
+<img src="/assets/img/springcore/core69.png" width="70%" align="center"><br/>
+
+`spring.main.allow-bean-definition-overriding`의 기본 값이 false로 되어있습니다. 이 옵션을 true로 바꾸면 overriding이 되어서 실행이 가능합니다.

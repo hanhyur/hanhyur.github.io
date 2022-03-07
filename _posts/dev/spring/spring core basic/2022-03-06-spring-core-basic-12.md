@@ -188,3 +188,12 @@ public class OrderServiceImpl implements OrderService {
 ---
 
 ## 옵션 처리
+
+주입할 빈이 없어도 동작을 해야할 경우가 있습니다. 예를 들어, 스프링 빈을 옵셔널하게 해두고 등록하지 않아도 기본 로직으로 동작한다거나, 없으면 로직을 실행하지 않는 식으로 동작해야 할 때도 있습니다.  
+`@Autowired`를 사용하면 <b>required</b> 옵션의 기본 값이 true이기 때문에 자동 주입 대상이 없으면 오류가 발생합니다.
+
+자동 주입 대상을 옵션으로 처리하는 방법은 다음과 같습니다.
+
+- `@Autowired(required = true)`
+- `org.springframework.lang.@Nullable`
+- `Optional<>`

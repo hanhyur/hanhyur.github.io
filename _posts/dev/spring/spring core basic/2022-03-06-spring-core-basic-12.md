@@ -248,3 +248,106 @@ public class AutowiredTest {
 
 결과를 보면 'setNoBean1'이 없는데, 이것은 호출이 되지 않았기 때문입니다. 나머지 경우 호출은 되지만, 특정 값이 출력되는 것을 볼 수 있습니다.  
 참고로 `@Nullable`, `Optional`은 스프링 전반에 걸쳐서 지원이 되는데, 예를 들어 생성자 자동 주입에서 특정 필드에만 사용해도 됩니다.
+
+---
+
+## 생성자 주입을 선택해라!
+
+과거에는 수정자 주입과 필드 주입을 많이 사용했지만 최근 스프링을 포함한 DI 프레임워크 대부분이 생성자 주입을 권장합니다. 그 이유는 다음과 같습니다.
+
+### 불변
+
+대부분의 의존관계 주입은 한번 일어나면 애플리케이션 종료 시점까지 의존관계를 변경할 일이 없습니다. 오히려 대부분의 의존관계는 애플리케이션 종료 전까지 변경되면 안됩니다. (불변해야 합니다.)  
+수정자 주입을 사용하면, `setXXX` 메서드를 public으로 열어두어야 합니다. 그러면 누군가가 실수로 변경할 수도 있고, 변경하면 안되는 메서드를 열어두는 것은 좋은 설계 방법이 아닙니다.  
+생성자 주입은 객체를 생성할 때 단 1번만 호출이 되기 때문에 이후에 호출되는 일이 없습니다. <b>즉, 불변하게 설계할 수 있습니다.</b>
+
+### 누락
+
+프레임워크 없이 순수한 자바 코드를 단위 테스트하는 경우가 생각보다 많습니다. 예를 들어 단위 테스트를 하는데 다음과 같이 수정자 의존관계인 경우를 보겠습니다.
+
+```java
+@Component
+public class OrderServiceImpl implements OrderService{
+
+  private MemberRepository memberRepository;
+  private DiscountPolicy discountPolicy;
+
+  @Autowired
+  public void setMemberRepository(MemberRepository memberRepository) {
+    this.memberRepository = memberRepository;
+  }
+
+  @Autowired
+  public void setDiscountPolicy(DiscountPolicy discountPolicy) {
+    this.discountPolicy = discountPolicy;
+  }
+
+  @Override
+  public Order createOrder(Long memberId, String itemName, int itemPrice) {
+    Member member = memberRepository.findById(memberId);
+    int discountPrice = discountPolicy.discount(member, itemPrice);
+
+    return new Order(memberId, itemName, itemPrice, discountPrice);
+  }
+
+  ...
+```
+
+```java
+package hello.core.order;
+
+import org.junit.jupiter.api.Test;
+
+class OrderServiceImplTest {
+
+  @Test
+  void createOrder() {
+    OrderServiceImpl orderService = new OrderServiceImpl();
+    orderService.createOrder(1L, "itemA", 10000);
+  }
+
+}
+```
+`
+테스트를 실행해보면 `NullPointerException`이 발생하는 것을 볼 수 있습니다. 왜 그럴까요?  
+`createOrder`만 테스트를 하고 싶다고 해도 실제로 `OrderServiceImpl`에는 `memberRepository`와 `discountPolicy`가 필요하기 때문에 임의의 값이라도 만들어서 넣어주어야 합니다. 하지만 테스트에서는 <b>누락</b>이 되었습니다. 왜 누락이 되었을까요? 테스트를 작성하는 입장에서는 의존관계에 무엇이 들어가는지 보이지 않습니다.  
+
+생성자 주입을 사용하게 되면 테스트 실행 시 컴파일 오류가 발생하는 것을 볼 수 있습니다. 그리고 이를 통해서 누락된 것을 확인할 수 있습니다. 이제 테스트 코드가 동작하도록 수정해보겠습니다.
+
+```java
+package hello.core.order;
+
+import hello.core.discount.FixDiscountPolicy;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemoryMemberRepository;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+class OrderServiceImplTest {
+
+  @Test
+  void createOrder() {
+    MemoryMemberRepository memberRepository = new MemoryMemberRepository();
+    memberRepository.save(new Member(1L, "name", Grade.VIP));
+
+    OrderServiceImpl orderService = new OrderServiceImpl(memberRepository, new FixDiscountPolicy());
+    Order order = orderService.createOrder(1L, "itemA", 10000);
+    assertThat(order.getDiscountPrice()).isEqualTo(1000);
+  }
+
+}
+```
+
+### final 키워드
+
+생성자 주입을 사용할 때 필드에 `final` 키워드를 사용할 수 있습니다. 이를 이용해서 생성자에서만 값을 넣어줄 수 있고 외부에서는 변경을 하지 못하게 막을 수 있습니다.  
+그리고 생성자를 만들 때 혹시라도 값을 설정하지 않는 경우를 막을 수 있습니다. `final`이 없으면 테스트를 실행하기 전까지는 누락된 것을 알 수가 없습니다. 하지만 `final`이 있으면 미리 오류를 볼 수 있으므로 예방할 수 있습니다.
+
+<img src="/assets/img/springcore/core73.png" width="60%" align="center"><br/>
+
+참고로 수정자 주입을 포함한 나머지 주입 방식은 모두 생성자 이후에 호출되므로, 필드에 `final` 키워드를 사용할 수 없습니다.
+
+---
+

@@ -76,3 +76,38 @@ public class OrderServiceImpl implements OrderService {
 
 ## 조회 빈이 2개 이상 - 문제
 
+기본적으로 `@Autowired`는 타입(Type)으로 조회를 합니다. 다음과 같은 코드가 있습니다.
+
+```java
+  @Autowired
+  private DiscountPolicy discountPolicy
+```
+
+`@Autowired`는 타입으로 조회하기 때문에 다음 코드와 유사하게 동작합니다. 물론 실제론 더 많은 기능을 제공합니다.
+
+```java
+  ac.getBean(DiscountPolicy.class)
+```
+
+타입으로 조회를 할 때 선택된 빈이 2개 이상이면 문제가 발생합니다.
+
+```java
+  @Component
+  public class FixDiscountPolicy implements DiscountPolicy { }
+```
+
+```java
+  @Component
+  public class RateDiscountPolicy implements DiscountPolicy { }
+```
+
+`DiscountPolicy`의 하위 타입인 `FixDiscountPolicy`와 `RateDiscountPolicy`를 스프링 빈으로 선언했습니다. 이 상태에서 의존관계 자동 주입을 실행하게 되면 `NoUniqueBeanDefinitionException` 오류가 발생하는 것을 볼 수 있습니다.  
+왜냐하면 타입으로 조회를 한다고 했는데, `FixDiscountPolicy`와 `RateDiscountPolicy`의 타입이 `DiscountPolicy`로 동일하기 때문입니다. 오류 메시지에 아주 친절하게 '하나의 빈을 기대했는데, `fixDiscountPolicy`, `rateDiscountPolicy` 2개가 발견되었다'라고 알려줍니다.
+
+이 때 하위타입으로 지정할 수도 있지만, 하위 타입으로 지정하는 것은 DIP(의존관계 역전 원칙)을 위배하고 유연성이 떨어집니다. 그리고 이름만 다르고, 완전히 동일한 타입의 스프링 빈이 2개 있을 수 있기 때문에 해결이 되지 않습니다.  
+스프링 빈을 수동 등록해서 문제를 해결해도 되지만, 의존관계 자동 주입에서 해결하는 여러가지 방법이 있습니다.
+
+---
+
+## @Autowired 필드 명, @Qualifier, @Primary
+

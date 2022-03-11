@@ -128,5 +128,69 @@ public class OrderServiceImpl implements OrderService {
 
 필드 명이 `rateDiscountPolicy`이므로 똑같이 하면 정상적으로 주입이 됩니다. 이처럼 필드 명 매칭은 타입 매칭이 먼저 시도되고, 그 결과에 여러 빈이 있을 때 추가로 동작하는 기능입니다.
 
+정리하면 타입 매칭이 일어나고, 타입 매칭 결과가 2개 이상인 경우 필드 명(파라미터 명)으로 빈 이름을 매칭합니다.
+
 ### @Qualifier 사용
 
+`@Qualifier`는 추가 구분자를 붙여주는 방법입니다. 주입 시 추가적인 방법을 제공하는 것이지 빈 이름을 변경하는 것은 아닙니다.
+
+```java
+  @Component
+  @Qualifier("mainDiscountPolicy")
+  public class RateDiscountPolicy implements DiscountPolicy { }
+```
+
+```java
+  @Component
+  @Qualifier("mainDiscountPolicy")
+  public class FixDiscountPolicy implements DiscountPolicy { }
+```
+
+주로 사용할 `RateDiscountPolicy`에 `@Qualifier("mainDiscountPolicy")`를 주고, `FixDiscountPolicy`는 이름을 그대로 사용했습니다. 이렇게 이름을 지정해준 다음 아래와 같이 사용할 수 있습니다.
+
+```java
+  @Autowired
+  public OrderServiceImpl(MemberRepository memberRepository, @Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy) {
+    this.memberRepository = memberRepository;
+    this.discountPolicy = discountPolicy;
+  }
+```
+
+이처럼 생성자 자동 주입 시 `@Qualifier`를 추가하여 찾아서 주입할 수 있습니다. 또한 수정자 주입 시에도 사용할 수 있습니다.
+
+```java
+  @Autowired
+  public DiscountPolicy setDiscountPolicy(@Qualifier("mainDiscountPolicy") DiscountPolicy discountPolicy) {
+    return discountPolicy;
+  }
+```
+
+만약 `@Qualifier`를 주입할 때 `@Qualifier("mainDiscountPolicy")`를 못찾으면 어떻게 될까요? 이 경우 `mainDiscountPolicy`라는 이름의 스프링 빈을 찾습니다.  
+물론 `@Qualifier`는 `@Qualifier`를 찾는 용도로만 사용하는게 명확하고 좋습니다.
+
+정리하면, `@Qualifier`는 `@Qualifier`끼리 매칭을 먼저 합니다. 그리고 없으면 해당하는 빈 이름을 매칭하고 찾지 못하면 `NoSuchBeanDefinitionException` 예외가 발생합니다.
+
+### @Primary 사용
+
+우선순위를 지정하는 방법으로 `@Autowired`시에 여러 빈이 매칭되면 `@Primary`가 우선권을 가집니다.
+
+`rateDiscountPolicy`가 우선권을 가지도록 해보겠습니다.
+
+```java
+  @Component
+  @Primary
+  public class RateDiscountPolicy implements DiscountPolicy { }
+
+  @Component
+  public class FixDiscountPolicy implements DiscountPolicy { }
+```
+
+이처럼 `@Qualifier`에 비해 `@Primary`가 훨씬 간편하고 사용하기 편합니다.
+
+### @Primary, @Qualifier 활용
+
+코드에서 자주 사용하는 메인 데이터베이스의 커넥션을 획득하는 스프링 빈이 있고, 코드에서 특별한 기능으로 가끔 사용하는 서브 데이터베이스의 커넥션을 획득하는 스프링 빈이 있다고 생각해보겠습니다.  
+메인 데이터베이스의 커넥션을 획득하는 스프링 빈은 `@Primary`를 적용해서 조회하는 곳에서 `@Qualifier` 지정 없이 편리하게 조회하고, 서브 데이터베이스 커넥션 빈을 획득할 때는 `@Qualifier`를 지정해서
+명시적으로 획득 하는 방식으로 사용하면 코드를 깔끔하게 유지할 수 있습니다. 물론 이 때 메인 데이터베이스의 스프링 빈을 등록할 때 `@Qualifier`를 지정해주는 것은 상관없습니다.
+
+그렇다면 `@Primary`는 기본 값처럼 동작하는 것이고, `@Qualifier`는 매우 상세하게 동작하는 것으로 볼 수 있습니다. 이런 경우 어떤 것이 우선권을 가져갈까요? 스프링은 자동보다는 수동이, 넒은 범위의 선택권 보다는 좁은 범위의 선택권이 우선 순위가 높습니다. 따라서 여기서도 `@Qualifier`가 우선권이 높습니다.

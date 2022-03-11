@@ -111,3 +111,22 @@ public class OrderServiceImpl implements OrderService {
 
 ## @Autowired 필드 명, @Qualifier, @Primary
 
+여러 개의 빈이 선택될 때 해결 방법을 하나씩 알아보겠습니다. 조회 빈이 2개 이상일 때 해결방법은 아래 세 가지가 있습니다.
+
+- `@Autowired` 필드 명 매칭
+- `@Qualifier` => `@Qualifier`끼리 매칭 => 빈 이름 매칭
+- `@Primary` 사용
+
+### @Autowired 필드 명 매칭
+
+`@Autowired`는 타입으로 조회를 한다고 했습니다. 타입 매칭을 시도할 때 여러 빈이 있다면 필드 이름(파라미터 이름)으로 빈 이름을 추가 매칭합니다.  
+
+```java
+  @Autowired
+  private DiscountPolicy rateDiscountPolicy
+```
+
+필드 명이 `rateDiscountPolicy`이므로 똑같이 하면 정상적으로 주입이 됩니다. 이처럼 필드 명 매칭은 타입 매칭이 먼저 시도되고, 그 결과에 여러 빈이 있을 때 추가로 동작하는 기능입니다.
+
+### @Qualifier 사용
+

@@ -194,3 +194,47 @@ public class OrderServiceImpl implements OrderService {
 명시적으로 획득 하는 방식으로 사용하면 코드를 깔끔하게 유지할 수 있습니다. 물론 이 때 메인 데이터베이스의 스프링 빈을 등록할 때 `@Qualifier`를 지정해주는 것은 상관없습니다.
 
 그렇다면 `@Primary`는 기본 값처럼 동작하는 것이고, `@Qualifier`는 매우 상세하게 동작하는 것으로 볼 수 있습니다. 이런 경우 어떤 것이 우선권을 가져갈까요? 스프링은 자동보다는 수동이, 넒은 범위의 선택권 보다는 좁은 범위의 선택권이 우선 순위가 높습니다. 따라서 여기서도 `@Qualifier`가 우선권이 높습니다.
+
+---
+
+## 애노테이션 직접 만들기
+
+실무에서 종종 애노테이션을 직접 만들기도 합니다. `@Qualifier`를 사용할 때 `@Qualifier("mainDiscountPolicy")`와 같이 <b>문자</b>를 사용하면 컴파일 시 문제가 있습니다. 문자는 컴파일 시 체크가 되지 않습니다.  
+이를 해결하기 위해 다음과 같이 애노테이션을 만들 수 있습니다.
+
+```java
+  package hello.core.annotation;
+
+  import org.springframework.beans.factory.annotation.Qualifier;
+
+  import java.lang.annotation.*;
+
+  @Target({ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE})
+  @Retention(RetentionPolicy.RUNTIME)
+  @Inherited
+  @Documented
+  @Qualifier("mainDiscountPolicy")
+  public @interface MainDiscountPolicy {
+  }
+```
+
+그리고 생성한 애노테이션은 사용할 위치에 추가해주면 됩니다.
+
+```java
+  @Component
+  @MainDiscountPolicy
+  public class RateDiscountPolicy implements DiscountPolicy { }
+```
+
+```java
+  @Autowired
+  public OrderServiceImpl(MemberRepository memberRepository, @MainDiscountPolicy DiscountPolicy discountPolicy) {
+    this.memberRepository = memberRepository;
+    this.discountPolicy = discountPolicy;
+  }
+```
+
+물론 `@Primary`를 잘 사용할 수 있다면 `@Primary`를 사용하는 것이 더 쉬울 수 있습니다.
+
+애노테이션에는 <b>상속</b>이라는 개념이 없습니다. 이렇게 여러 애노테이션을 모아서 사용하는 기능은 스프링이 지원해주는 기능이므로, `@Qualifier` 뿐만 아니라 다른 애노테이션들도 함께 조합해서 사용할 수 있습니다. 심지어 `@Autowired`도 재정의할 수 있습니다.  
+하지만 스프링이 제공하는 기능을 뚜렷한 목적없이 무분별하게 재정의하는 것은 유지보수에 큰 혼란을 야기할 수 있기 때문에 자제하는 것이 좋습니다.

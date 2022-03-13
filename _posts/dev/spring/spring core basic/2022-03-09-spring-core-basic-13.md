@@ -238,3 +238,69 @@ public class OrderServiceImpl implements OrderService {
 
 애노테이션에는 <b>상속</b>이라는 개념이 없습니다. 이렇게 여러 애노테이션을 모아서 사용하는 기능은 스프링이 지원해주는 기능이므로, `@Qualifier` 뿐만 아니라 다른 애노테이션들도 함께 조합해서 사용할 수 있습니다. 심지어 `@Autowired`도 재정의할 수 있습니다.  
 하지만 스프링이 제공하는 기능을 뚜렷한 목적없이 무분별하게 재정의하는 것은 유지보수에 큰 혼란을 야기할 수 있기 때문에 자제하는 것이 좋습니다.
+
+---
+
+## 조회한 빈이 모두 필요할 떄, List, Map
+
+의도적으로 해당 타입의 스프링 빈이 다 필요한 경우가 있습니다. 예를 들어 할인과 관련된 서비스를 제공하는데 클라이언트가 할인의 종류를 선택할 수 있다고 생각해보겠습니다. 이 때, 스프링을 사용하면 소위 말하는 전략 패턴을 쉽게 구현할 수 있습니다.
+
+```java
+package hello.core.autowired;
+
+import hello.core.discount.DiscountPolicy;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
+import java.util.List;
+import java.util.Map;
+
+public class AllBeanTest {
+
+  @Test
+  void findAllBean() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(DiscountService.class);
+  }
+
+  static class DiscountService {
+    private final Map<String, DiscountPolicy> policyMap;
+    private final List<DiscountPolicy> policyList;
+
+    @Autowired
+    public DiscountService(Map<String, DiscountPolicy> policyMap, List<DiscountPolicy> policyList) {
+      this.policyMap = policyMap;
+      this.policyList = policyList;
+      System.out.println("policyMap = " + policyMap);
+      System.out.println("policyList = " + policyList);
+    }
+  }
+
+}
+```
+
+먼저 테스트 코드를 작성했습니다. 위와 같이 생성한 후 출력해보면, 당연히 아무 값도 없습니다.
+
+<img src="/assets/img/springcore/core74.png" width="60%" align="center"><br/>
+
+왜냐하면 `DiscountService`만 스프링 빈으로 등록되었기 때문입니다.
+
+이전에 사용하던 것들도 사용하기 위해서 `AutoAppConfig.class`를 추가해줍니다. 그러면, 기존에 존재하던 `rateDiscountPolicy`와 `fixDiscountPolicy`가 빈으로 등록됩니다.
+
+```java
+  public class AllBeanTest {
+
+    @Test
+    void findAllBean() {
+      ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class, DiscountService.class);
+    }
+
+    ...
+    
+```
+
+<img src="/assets/img/springcore/core75.png" width="60%" align="center"><br/>
+
+이전과 달리 출력 결과가 나온 것을 볼 수 있습니다.
+
+여기까지는 아 그렇네..하고 넘어갈 수 있지만, 여기서 비즈니스 로직을 추가해보겠습니다.

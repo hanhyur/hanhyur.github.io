@@ -304,3 +304,41 @@ public class AllBeanTest {
 이전과 달리 출력 결과가 나온 것을 볼 수 있습니다.
 
 여기까지는 아 그렇네..하고 넘어갈 수 있지만, 여기서 비즈니스 로직을 추가해보겠습니다.
+
+```java
+public class AllBeanTest {
+
+  @Test
+  void findAllBean() {
+    ApplicationContext ac = new AnnotationConfigApplicationContext(AutoAppConfig.class, DiscountService.class);
+
+    DiscountService discountService = ac.getBean(DiscountService.class);
+    Member member = new Member(1L, "userA", Grade.VIP);
+    int discountPrice = discountService.discount(member, 10000, "fixDiscountPolicy");
+
+    assertThat(discountService).isInstanceOf(DiscountService.class);
+    assertThat(discountPrice).isEqualTo(1000);
+
+    int rateDiscountPrice = discountService.discount(member, 20000, "rateDiscountPolicy");
+    assertThat(rateDiscountPrice).isEqualTo(2000);
+  }
+
+  static class DiscountService {
+    
+    ...
+
+    public int discount(Member member, int price, String discountCode) {
+      DiscountPolicy discountPolicy = policyMap.get(discountCode);
+      return discountPolicy.discount(member, price);
+    }
+  }
+
+}
+```
+
+이 `DiscountService`는 Map으로 모든 DiscountPolicy를 주입받습니다. 생성자가 하나이기 때문에 `@Autowired`를 생략할 수 있습니다. 이 때 `fixDiscountPolicy`, `rateDiscountPolicy`가 주입됩니다.  
+`discount()` 메서드는 discountCode로 "fixDiscountPolicy"가 넘어오면 `map`에서 `fixDiscountPolicy` 스프링 빈을 찾아서 실행하고, "rateDiscountPolicy"가 넘어오면 `rateDiscountPolicy` 스프링 빈을 찾아서 실행합니다.
+
+---
+
+## 자동, 수동의 올바른 실무 운영 기준

@@ -340,5 +340,3 @@ public class AllBeanTest {
 `discount()` 메서드는 discountCode로 "fixDiscountPolicy"가 넘어오면 `map`에서 `fixDiscountPolicy` 스프링 빈을 찾아서 실행하고, "rateDiscountPolicy"가 넘어오면 `rateDiscountPolicy` 스프링 빈을 찾아서 실행합니다.
 
 ---
-
-## 자동, 수동의 올바른 실무 운영 기준

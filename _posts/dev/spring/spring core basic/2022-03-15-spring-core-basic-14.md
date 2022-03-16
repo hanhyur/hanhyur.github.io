@@ -194,3 +194,96 @@ public class NetworkClient implements InitializingBean, DisposableBean {
 
 ## 빈 등록 초기화, 소멸 메서드
 
+빈을 등록하는 시점에 각각 지정해주는 방법을 보겠습니다. 설정 정보에 `@Bean(initMethod = "init", destroyMethod = "close")`와 같이 초기화, 소멸 메서드를 지정하면 됩니다.
+
+```java
+package hello.core.lifecycle;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class NetworkClient {
+
+  private String url;
+
+  public NetworkClient() {
+    System.out.println("생성자 호출, url = " + url);
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  // 서비스 시작 시 호출
+  public void connect() {
+    System.out.println("connect : " + url);
+  }
+
+  public void call(String message) {
+    System.out.println("call : " + url + " message = " + message);
+  }
+
+  // 서비스 종료 시 호출
+  public void disconnect() {
+    System.out.println("close : " + url);
+  }
+
+  public void init() {
+    System.out.println("NetworkClient.init");
+    connect();
+    call("초기화 연결 메세지");
+  }
+
+  public void close() {
+    System.out.println("NetworkClient.close");
+    disconnect();
+  }
+}
+```
+
+```java
+package hello.core.lifecycle;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+public class BeanLifeCycleTest {
+
+  @Test
+  public void lifeCycleTest() {
+    ConfigurableApplicationContext ac = new AnnotationConfigApplicationContext(LifeCycleConfig.class);
+    NetworkClient client = ac.getBean(NetworkClient.class);
+    ac.close();
+  }
+
+  @Configuration
+  static class LifeCycleConfig {
+
+    @Bean(initMethod = "init", destroyMethod = "close")
+    public NetworkClient networkClient() {
+      NetworkClient networkClient = new NetworkClient();
+      networkClient.setUrl("http://hello-spring.dev");
+      return networkClient;
+    }
+
+  }
+}
+```
+
+<img src="/assets/img/springcore/core78.png" width="60%" align="center"><br/>
+
+이 방법은 메서드 이름을 자유롭게 줄 수 있습니다. 그리고 스프링 빈이 스프링에 의존하지 않습니다.  
+가장 큰 장점은 코드가 아닌 설정정보를 사용하기 때문에 코드를 고칠 수 없는 외부 라이브러리에도 초기화, 종료 메서드를 적용할 수 있습니다.
+
+### 종료 메서드 추론
+
+`@Bean`의 <b>destroyMethod</b> 속성에는 아주 특별한 기능이 있습니다. 일반적으로 외부 라이브러리는 대부분 `close`, `shutdown`이라는 이름의 종료 메서드를 사용합니다.  
+`@Bean`의 <b>destroyMethod</b>는 기본 값이  추론이라는 뜻의 `{inferred}`로 등록되어 있습니다. 이 추론 기능은 `close`, `shutdown`이라는 이름의 메서드를 자동으로 호출해줍니다. 이름 그대로 종료 메서드를 추론해서 호출하는 것입니다.  
+따라서 직접 스프링 빈으로 등록하면 종료 메서드를 별도로 적어주지 않아도 잘 동작합니다. 추가 기능을 사용하기 싫다면 빈 공백을 지정하면 됩니다.
+
+---
+
+## 애노테이션 @PostConstruct, @PreDestroy

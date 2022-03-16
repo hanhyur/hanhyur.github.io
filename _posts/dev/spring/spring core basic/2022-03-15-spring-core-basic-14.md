@@ -287,3 +287,63 @@ public class BeanLifeCycleTest {
 ---
 
 ## 애노테이션 @PostConstruct, @PreDestroy
+
+`@PostConstruct`, `@PreDestroy` 애노테이션을 사용하는 방법을 알아보겠습니다. 애노테이션 이름에서 아주 직관적으로 볼 수 있듯이 각각 생성된 후에, 소멸되기 전에 동작합니다.
+
+```java
+package hello.core.lifecycle;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+public class NetworkClient {
+
+  private String url;
+
+  public NetworkClient() {
+    System.out.println("생성자 호출, url = " + url);
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  // 서비스 시작 시 호출
+  public void connect() {
+    System.out.println("connect : " + url);
+  }
+
+  public void call(String message) {
+    System.out.println("call : " + url + " message = " + message);
+  }
+
+  // 서비스 종료 시 호출
+  public void disconnect() {
+    System.out.println("close : " + url);
+  }
+
+  @PostConstruct
+  public void init() {
+    System.out.println("NetworkClient.init");
+    connect();
+    call("초기화 연결 메세지");
+  }
+
+  @PreDestroy
+  public void close() {
+    System.out.println("NetworkClient.close");
+    disconnect();
+  }
+}
+```
+
+<img src="/assets/img/springcore/core79.png" width="60%" align="center"><br/>
+
+아주 간단하게 애노테이션만 추가해주면 됩니다.
+
+여기서는 다른게 아니라 패키지가 중요합니다. 애노테이션의 패키지를 보면 `javax`인데 이 패키지는 자바에서 공식적으로 지원하는 패키지입니다. 따라서 스프링만이 아니라 다른 컨테이너를 사용하더라도 적용할 수 있습니다.
+
+### 특징
+
+이 방법은 최신 스프링에서 가장 권장하는 방법입니다. 애노테이션 하나만 붙이면 되기 떄문에 매우 편리합니다. 위에서 설명했듯이 `javax.annotation`이기 때문에 스프링에 종속적인 기술이 아닌 'JSR-250'이라는 자바 표준입니다. 따라서 스프링이 아닌 다른 컨테이너에서도 동작합니다. 그리고 빈 등록하는 것이 아니기 때문에 컴포넌트 스캔과도 잘 어울립니다.  
+유일한 단점이 하나 있는데 외부 라이브러리에는 적용하지 못한다는 것입니다. 외부 라이브러리에 적용해야 한다면 `@Bean`의 기능을 사용해야 합니다.

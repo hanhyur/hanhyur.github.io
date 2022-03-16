@@ -128,3 +128,69 @@ public class BeanLifeCycleTest {
 ---
 
 ## 인터페이스 InitializingBean, DisposableBean
+
+인터페이스로 초기화와 소멸 전 콜백을 받는 방법을 알아보겠습니다.
+
+```java
+package hello.core.lifecycle;
+
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+
+public class NetworkClient implements InitializingBean, DisposableBean {
+
+  private String url;
+
+  public NetworkClient() {
+    System.out.println("생성자 호출, url = " + url);
+  }
+
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  // 서비스 시작 시 호출
+  public void connect() {
+    System.out.println("connect : " + url);
+  }
+
+  public void call(String message) {
+    System.out.println("call : " + url + " message = " + message);
+  }
+
+  // 서비스 종료 시 호출
+  public void disconnect() {
+    System.out.println("close : " + url);
+  }
+
+  @Override
+  public void afterPropertiesSet() throws Exception {
+    System.out.println("NetworkClient.afterPropertiesSet");
+    connect();
+    call("초기화 연결 메세지");
+  }
+
+  @Override
+  public void destroy() throws Exception {
+    System.out.println("NetworkClient.destroy");
+    disconnect();
+  }
+}
+```
+
+`InitializingBean`은 `afterPropertiesSet()` 메서드로 초기화를 지원합니다. `afterPropertiesSet()` 메서드는 빈이 주입되고 난 후 동작합니다.  
+`DisposableBean`은 `destroy()` 메서드로 소멸을 지원합니다.
+
+<img src="/assets/img/springcore/core77.png" width="60%" align="center"><br/>
+
+테스트 코드를 돌려서 결과를 보면 초기화 메서드가 주입 완료 후에 호출되고, 스프링 컨테이너의 종료가 호출되면 소멸 메서드가 호출되는 것을 볼 수 있습니다.
+
+### 초기화, 소멸 인터페이스 단점
+
+이 인터페이스는 스프링 전용이기 때문에, 코드가 스프링에 의존적이게 됩니다. 또한 초기화, 소멸 메서드의 이름을 변경할 수 없고, 내가 코드를 고칠 수 없는 외부 라이브러리에 적용할 수 없습니다.  
+이 방법은 스프링 초기에 나온 방법이여서 지금은 더 나은 방법이 있기 때문에 거의 사용하지 않습니다.
+
+---
+
+## 빈 등록 초기화, 소멸 메서드
+

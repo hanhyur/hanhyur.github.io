@@ -179,3 +179,67 @@ public class PrototypeTest {
 ---
 
 ## 프로토타입 스코프 - 싱글톤 빈과 함께 사용시 문제점
+
+스프링 컨테이너에 프로토타입 스코프의 빈을 요청하면 항상 새로운 객체 인스턴스를 생성해서 반환해준다고 했습니다. 여기서 문제가 있습니다. 싱글톤 빈과 함께 사용할 때는 의도한 대로 잘 동작하지 않으므로 주의해야 합니다.
+
+<img src="/assets/img/springcore/core85.png" width="60%" align="center"><br/>
+
+클라이언트 A가 스프링 컨테이너에 프로토타입 빈을 요청했습니다. 스프링 컨테이너는 프로토타입 빈을 새로 생성하여 반환(x01)하고 해당 빈의 count 필드 값은 0입니다. 클라이언트 A는 조회한 프로토타입 빈에 `addCount()`를 호출하면서 count 필드를 +1 했습니다. 결과적으로 프로토타입 빈(x01)의 count는 1이 됩니다.  
+프로토타입 스코프의 빈은 호출할 때마다 생성된다고 했습니다. 따라서 클라이언트 B가 동일한 요청을 수행할 때 프로토타입 빈을 x02라고 하면 x02의 count도 0에서 1이 됩니다.
+
+이것을 테스트코드로 확인하면 아래와 같습니다.
+
+```java
+package hello.core.scope;
+
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+public class SingletonWithPrototypeTest1 {
+
+  @Test
+  void prototypeFind() {
+    AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(PrototypeBean.class);
+
+    PrototypeBean prototypeBean1 = ac.getBean(PrototypeBean.class);
+    prototypeBean1.addCount();
+    assertThat(prototypeBean1.getCount()).isEqualTo(1);
+
+    PrototypeBean prototypeBean2 = ac.getBean(PrototypeBean.class);
+    prototypeBean2.addCount();
+    assertThat(prototypeBean2.getCount()).isEqualTo(1);
+  }
+
+  @Scope("prototype")
+  static class PrototypeBean {
+
+    private int count = 0;
+
+    public void addCount() {
+      count++;
+    }
+
+    public int getCount() {
+      return count;
+    }
+
+    @PostConstruct
+    public void init() {
+      System.out.println("PrototypeBean.init " + this);
+    }
+
+    @PreDestroy
+    public void destroy() {
+      System.out.println("PrototypeBean.destroy");
+    }
+  }
+
+}
+```

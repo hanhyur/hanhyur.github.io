@@ -243,3 +243,70 @@ public class SingletonWithPrototypeTest1 {
 
 }
 ```
+
+### 싱글톤 빈에서 프로토타입 빈 사용
+
+이번에는 `clientBean`이라는 싱글톤 빈이 의존관계 주입을 통해서 프로토타입 빈을 주입받아서 사용하는 예제를 보겠습니다.
+
+<img src="/assets/img/springcore/core86.png" width="60%" align="center"><br/>
+
+<img src="/assets/img/springcore/core87.png" width="60%" align="center"><br/>
+
+<img src="/assets/img/springcore/core88.png" width="60%" align="center"><br/>
+
+먼저, `clientBean`은 싱글톤이므로 보통 스프링 컨테이너 생성 시점에 함께 생성되고 의존관계 주입도 발생합니다.  
+의존관계 자동 주입을 사용하여 주입 시점에 스프링 컨테이너에 프로토타입 빈을 요청하면 스프링 컨테이너는 프로토타입 빈을 생성해서 `clientBean`에 반환합니다. 이 때 프로토타입 빈의 count 필드 값은 0입니다.  
+이렇게 반환 받은 프로토타입 빈을 `clientBean`은 내부 필드에 보관합니다. 정확히는 참조값을 보관하는 것입니다.  
+
+클라이언트 A가 `clientBean`을 스프링 컨테이너에 요청해서 받을 때, 싱글톤이므로 항상 같은 `clientBean`이 반환됩니다.  
+`clientBean.logic()`을 호출하면 `clientBean`은 prototypeBean의 `addCount()`를 호출해서 프로토타입 빈의 count를 증가시킵니다. 따라서 count는 1이 됩니다.
+
+싱글톤이므로 클라이언트 B가 `clientBean`을 스프링 컨테이너에 요청해서 받으면 당연히 같은 `clientBean`이 반환됩니다. 여기서 중요한 점은 <b>clientBean이 내부에 가지고 있는 프로토타입 빈은 이미 과거에 주입이 끝난 빈입니다. 따라서 주입 시점에 스프링 컨테이너에 요청해서 프로토타입 빈이 새롭게 생성된 것이지 사용할 때마다 새로 생성되는 것이 아닙니다.</b>  
+마찬가지로 클라이언트 B가 `clientBean.logic()`을 호출하면 `clientBean`은 prototypeBean의 `addCount()`를 호출해서 프로토타입 빈의 count를 증가시킵니다. 따라서 원래 count 값이 1이었으므로 2가 됩니다.
+
+코드로 확인해보겠습니다.
+
+```java
+public class SingletonWithPrototypeTest1 {
+
+  ...
+
+  @Test
+  void singletonClientUsePrototype() {
+    AnnotationConfigApplicationContext ac = new AnnotationConfigApplicationContext(ClientBean.class, PrototypeBean.class);
+
+    ClientBean clientBean1 = ac.getBean(ClientBean.class);
+    int count1 = clientBean1.logic();
+    assertThat(count1).isEqualTo(1);
+
+    ClientBean clientBean2 = ac.getBean(ClientBean.class);
+    int count2 = clientBean2.logic();
+    assertThat(count2).isEqualTo(2);
+  }
+
+  @Scope("singleton")
+  static class ClientBean {
+    private final PrototypeBean prototypeBean;
+
+    @Autowired
+    public ClientBean(PrototypeBean prototypeBean) {
+      this.prototypeBean = prototypeBean;
+    }
+
+    public int logic() {
+      prototypeBean.addCount();
+      return prototypeBean.getCount();
+    }
+  }
+
+  ...
+
+```
+
+스프링은 일반적으로 싱글톤 빈을 사용하므로 싱글톤 빈이 프로토타입 빈을 사용하게 됩니다. 그런데 싱글톤 빈은 생성 시점에서만 의존관계 주입을 받기 때문에, 프로토타입 빈이 새로 생성은 되지만, 싱글톤 빈과 함께 계속 유지되는 것이 문제입니다.
+
+프로토타입 빈을 사용하는 이유는 사용할 때마다 새로운 프로토타입 빈이 생성되기 때문인데, 이렇게 동작한다면 싱글톤을 사용하지 프로토타입을 사용할 이유가 없습니다. 물론 `ApplicationContext`를 사용해서 직접 받아 사용할 수 있지만 좋지 않은 코드입니다.
+
+---
+
+## 프로토타입 - 싱글톤 빈과 함께 사용 시 Provider로 문제 해결

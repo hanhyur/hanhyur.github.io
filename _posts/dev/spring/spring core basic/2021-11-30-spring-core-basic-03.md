@@ -27,7 +27,7 @@ comments: true
 
 프로젝트 사양은 다음과 같다.
 
-<img src="/assets/img/springcore/core01.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160282567-1076962e-106a-4830-8cec-79d9f3592503.png" width="70%" align="center"><br/>
 
 이 때 dependencies를 넣지 않는데 이렇게 할 경우 스프링 코어 쪽 라이브러리와 간단한 요소들로 구성을 해주기 때문이다.
 

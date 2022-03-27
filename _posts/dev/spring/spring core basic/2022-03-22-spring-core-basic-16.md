@@ -4,7 +4,7 @@ date: 2022-03-22 21:33:00
 title: "빈 스코프 2부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [ spring boot basic ]
+category: [ spring core basic ]
 tags: [ spring, basic, oop ]
 use_math: true
 comments: true

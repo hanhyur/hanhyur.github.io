@@ -4,7 +4,7 @@ date: 2021-12-03 20:41:00
 title: "스프링 핵심 원리 이해2 1부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [ spring ]
+category: [ spring boot basic ]
 tags: [ spring, basic, oop ]
 use_math: true
 comments: true

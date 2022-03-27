@@ -4,7 +4,7 @@ date: 2022-02-23 23:00:00
 title: "싱글톤 컨테이너 2부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [ spring ]
+category: [ spring boot basic ]
 tags: [ spring, basic, oop ]
 use_math: true
 comments: true

@@ -4,8 +4,8 @@ date: 2022-02-25 19:00:00
 title: "컴포넌트 스캔"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [spring]
-tags: [spring, basic, oop]
+category: [ spring boot basic ]
+tags: [ spring, basic, oop ]
 use_math: true
 comments: true
 ---

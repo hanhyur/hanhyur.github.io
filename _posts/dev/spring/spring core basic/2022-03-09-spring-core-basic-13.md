@@ -4,8 +4,8 @@ date: 2022-03-09 23:30:00
 title: "의존관계 자동 주입 2부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [spring]
-tags: [spring, basic, oop]
+category: [ spring boot basic ]
+tags: [ spring, basic, oop ]
 use_math: true
 comments: true
 ---

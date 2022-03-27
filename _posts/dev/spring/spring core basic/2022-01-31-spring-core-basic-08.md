@@ -4,7 +4,7 @@ date: 2022-01-31 22:04:00
 title: "스프링 컨테이너와 스프링 빈 2부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [ spring ]
+category: [ spring boot basic ]
 tags: [ spring, basic, oop ]
 use_math: true
 comments: true

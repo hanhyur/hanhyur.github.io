@@ -4,7 +4,7 @@ date: 2021-11-28 13:55:00
 title: "객체 지향 설계와 스프링 1부"
 description: "스프링 핵심 원리 - 기본편"
 subject: Spring
-category: [ spring ]
+category: [ spring boot basic ]
 tags: [ spring, basic, oop ]
 use_math: true
 comments: true

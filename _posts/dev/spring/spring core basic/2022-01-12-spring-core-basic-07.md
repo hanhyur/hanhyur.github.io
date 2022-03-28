@@ -34,7 +34,7 @@ ApplicationContext applicationContext = new AnnotationConfigApplicationContext(A
 
 ### 1. 스프링 컨테이너 생성
 
-<img src="/assets/img/springcore/core33.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283073-9fa71ccc-b8ca-401a-94fa-04e705be8760.png" width="70%" align="center"><br/>
 
 `new AnnotationConfigApplicationContext(AppConfig.class)`로 스프링 컨테이너를 생성하면서 구성 정보를 주었습니다. 그러면 스프링 컨테이너가 만들어지는데 컨테이너 안에는 스프링 빈 저장소라는게 있습니다. 빈 저장소에 key는 빈 이름으로 저장되고 value는 빈 객체로 저장됩니다. 
 
@@ -44,7 +44,7 @@ ApplicationContext applicationContext = new AnnotationConfigApplicationContext(A
 
 스프링 컨테이너는 생성되면서 파라미터로 넘어온 설정 클래스 정보를 사용해서 스프링 빈 저장소에 빈을 등록합니다. `@Bean`이 붙은 메서드를 모두 호출해서 메서드 이름을 key로 빈 이름에 등록하고 반환하는 객체를 빈 객체로 등록합니다.
 
-<img src="/assets/img/springcore/core34.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283075-940faa8c-33a5-4159-9591-4b35f559eefb.png" width="70%" align="center"><br/>
 
 참고로 빈의 이름은 메서드 이름을 사용하는데 임의로 부여할 수 도 있습니다.
 
@@ -54,7 +54,7 @@ ApplicationContext applicationContext = new AnnotationConfigApplicationContext(A
 
 ### 3. 스프링 빈 의존관계 설정
 
-<img src="/assets/img/springcore/core35.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283077-a3f1082e-901a-408e-9641-c72eb05560b8.png" width="70%" align="center"><br/>
 
 스프링 컨테이너는 설정 정보를 참고하여 의존관계를 주입(DI)합니다. 동적인 객체 인스턴스 의존관계를 스프링이 연결해주는 것입니다.
 
@@ -97,7 +97,7 @@ class ApplicationContextInfoTest {
 
 정의된 이름을 가져와서 그대로 출력해보겠습니다.
 
-<img src="/assets/img/springcore/core36.png" width="100%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283078-1fed3eff-9e8e-426c-9842-d249b4353521.png" width="100%" align="center"><br/>
 
 빨간 테두리에 있는 내용들은 스프링이 내부적으로 자체 확장을 위해 사용하는 빈입니다. 초록 테두리에 appConfig가 있는데 appConfig도 스프링 빈으로 등록됩니다. 그리고 파란 테두리에 있는 빈들이 등록한 것들입니다.
 
@@ -135,7 +135,7 @@ class ApplicationContextInfoTest {
 
 이렇게 작성하고 실행하면 직접 등록한 5개만 출력됩니다.
 
-<img src="/assets/img/springcore/core37.png" width="80%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283079-602d42d5-0d0d-4a68-8cd9-ed53f2b25296.png" width="80%" align="center"><br/>
 
 출력 내용을 보면 각각에 맞게 등록된 것을 볼 수 있습니다. 참고로 `ROLE_INFRASTRUCTURE`는 스프링이 내부에서 사용하는 빈입니다.
 
@@ -261,7 +261,7 @@ class ApplicationContextBasicFindTest {
 
 작성한 테스트 코드를 모두 실행해보면 성공하는 것을 확인할 수 있습니다.
 
-<img src="/assets/img/springcore/core38.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283080-b8d3e1ef-2662-4499-aedc-1b742ebaf5af.png" width="70%" align="center"><br/>
 
 ---
 
@@ -312,7 +312,7 @@ class ApplicationContextSameBeanFindTest {
 
 스프링 입장에서는 2개가 나오기 때문에 뭘 선택해야할지 모릅니다. 따라서 다음과 같은 에러를 볼 수 있습니다.
 
-<img src="/assets/img/springcore/core39.png" width="100%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283081-40067293-5e3f-41e2-a209-d826c74efdc5.png" width="100%" align="center"><br/>
 
 따라서 다음과 같이 코드를 변경해서 검증할 수 있습니다.
 
@@ -353,7 +353,7 @@ class ApplicationContextSameBeanFindTest {
 
 `ac.getBeansOfType()`로 조회하면 Map으로 나오는 것을 볼 수 있습니다. 각각의 출력과 `beansOfType` 전체를 출력하면 다음과 같이 나오는 것을 볼 수 있습니다.
 
-<img src="/assets/img/springcore/core40.png" width="100%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283083-ff37289a-2018-4f37-a5a5-0b551e711f91.png" width="100%" align="center"><br/>
 
 이 방법은 `Autowired`와 같이 자동으로 의존관계 주입할 때 적용되는 기능입니다.
 

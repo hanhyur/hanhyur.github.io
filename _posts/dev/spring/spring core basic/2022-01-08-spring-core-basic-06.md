@@ -120,7 +120,7 @@ public class AppConfig {
 
 기존에는 이것을 변경할 때 클라이언트 코드가 영향을 받았습니다. 하지만 AppConfig를 만들면서 애플리케이션이 크게 사용 영역과 구성하는 영역으로 분리되었습니다.
 
-<img src="/assets/img/springcore/core27.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283065-db502bc1-d5f7-41e0-a9f8-6ec050cdc452.png" width="70%" align="center"><br/>
 
 객체를 생성하고 구성(Configuration)하는 영역은 사용 영역과 구분되어 있기 때문에 구성 영역만 수정하면 클라이언트에 영향을 주지않고 변경할 수 있습니다.
 
@@ -143,11 +143,11 @@ public class AppConfig {
 
 이제 수정을 했으니 해당 기능이 잘 적용되었는지 확인해보겠습니다. 
 
-<img src="/assets/img/springcore/core28.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283066-abe7defe-2e7c-49f1-b1d5-ed62efad0ac0.png" width="70%" align="center"><br/>
 
 정말 변경되서 적용되는지 확인하기 위해 기존의 할인 정책일 때와 비교해보겠습니다.
 
-<img src="/assets/img/springcore/core29.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283067-3bce736d-a967-4396-baa1-f64f5ed67f55.png" width="70%" align="center"><br/>
 
 이처럼 할인 정책을 변경하더라도, 애플리케이션의 구성 역할을 담당하는 부분만 변경하면 됩니다. 클라이언트 코드를 포함하여 사용 영역의 어떠한 코드도 손댈 필요가 없습니다.
 
@@ -231,16 +231,16 @@ public class AppConfig {
 
 먼저 "정적인 클래스 의존관계"는 클래스가 사용하는 import 코드만 보고 의존관계를 쉽게 판단할 수 있습니다. 정적인 의존관계는 애플리케이션을 실행하지 않고도 분석할 수 있습니다. 
 
-<img src="/assets/img/springcore/core30.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283071-bffb97f2-fd54-48cb-a690-b9837425c64a.png" width="70%" align="center"><br/>
 
 툴을 이용하여 위와 같은 다이어그램도 볼 수 있습니다. 이처럼 실행하지 않고도 판단할 수 있습니다.  
 아래의 클래스 다이어그램을 보면 `OrderServiceImpl`은 `MemberRepository`, `DiscountPolicy`에 의존한다는 것을 알 수 있습니다. 하지만 이러한 클래스 의존관계 만으로는 실제로 어떤 객체가 주입되는지는 알 수 없습니다.
 
-<img src="/assets/img/springcore/core10.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283043-faffef1f-a72d-49bd-a120-5ab52749f63d.png" width="70%" align="center"><br/>
 
 무엇이 주입되는지는 실제로 실행해봐야 알 수 있습니다. 이러한 의존 관계를 "동적인 객체 의존 관계"라고 합니다. 아래의 객체 다이어그램을 보면 됩니다.
 
-<img src="/assets/img/springcore/core11.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283044-d993ab6e-3dfa-4c1b-803a-16fb830cbb2f.png" width="70%" align="center"><br/>
 
 이러한 객체 다이어그램은 애플리케이션이 실행될 때마다 동적으로 변경됩니다. 애플리케이션 런타임에 외부에서 실제 구현 객체를 생성하고 클라이언트에 전달해서 클라이언트와 서버의 실제 의존관계가 연결 되는 것을 "의존관계 주입"이라고 합니다.
 
@@ -336,7 +336,7 @@ public class MemberApp {
 
 이제 실행해보겠습니다.
 
-<img src="/assets/img/springcore/core31.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283071-bffb97f2-fd54-48cb-a690-b9837425c64a.png" width="70%" align="center"><br/>
 
 기존과 다르게 로그가 나온 것을 볼 수 있습니다. Creating shared instance of singleton bean 이후에 메서드의 이름이 들어가 있는 것을 볼 수 있습니다. 즉 컨테이너에 해당 이름으로 등록된 것을 볼 수 있습니다. 이 후에는 기존과 동일하게 실행된 결과를 볼 수 있습니다.
 
@@ -380,7 +380,7 @@ public class OrderApp {
 
 이제 실행해보겠습니다. 똑같이 등록되고 결과가 나오는 것을 볼 수 있습니다.
 
-<img src="/assets/img/springcore/core32.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283072-cab3d6f9-5ed3-4fec-9ada-6ddd443f45ef.png" width="70%" align="center"><br/>
 
 ### 스프링 컨테이너
 

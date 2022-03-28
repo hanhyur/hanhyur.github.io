@@ -38,7 +38,7 @@ comments: true
 
 이제 새로운 정률 할인 정책을 추가해보자. 객체지향 설계 원칙을 잘 준수했다면 우리는 `RateDiscountPolicy`를 만들어서 바꿔주기만 하면 된다.
 
-<img src="/assets/img/springcore/core17.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283051-7c7df0cf-46a5-4927-89b2-9e156bfeeba5.png" width="70%" align="center"><br/>
 
 먼저 빠르게 코드를 작성한다.
 
@@ -110,11 +110,11 @@ class RateDiscountPolicyTest {
 
 성공 케이스를 확인하는 것도 중요하지만 실패 케이스를 확인하는 것도 중요하다. 아래의 테스트 코드는 실제로 0이 나와야 하는데 1000이 나온다고 가정하고 작성되었다. 이제 결과를 확인해보자.
 
-<img src="/assets/img/springcore/core18.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283052-cf389709-0ff4-439a-a57a-9b85bae9ec6c.png" width="70%" align="center"><br/>
 
 올바르게 작성된 성공 케이스는 성공을 나타냈지만 실패 케이스는 오류가 출력되었다. 오류 부분을 잘 보면 기대값은 1000이였는데 실제 값은 0이어서 실패했다고 나와있다. 이제 실패한 케이스의 기대값을 0으로 바꾸고 돌려보자. 성공하는 것을 확인할 수 있다.
 
-<img src="/assets/img/springcore/core19.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283054-85040e21-886b-4739-aa90-4fc188efb809.png" width="70%" align="center"><br/>
 
 ---
 
@@ -170,15 +170,15 @@ public class OrderServiceImpl implements OrderService{
 
 클래스 다이어그램을 보면서 좀 더 살펴보자.
 
-<img src="/assets/img/springcore/core20.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283055-237e0896-4c29-44f5-acbc-1541fa8182b3.png" width="70%" align="center"><br/>
 
 지금까지 우리가 예상한 의존은 위의 그림과 같았다. 하지만 실제 의존관계는 아래와 같았던 것이다. 즉, DIP를 위반하고 있었다.
 
-<img src="/assets/img/springcore/core21.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283056-b41256ed-054c-4bbb-a0f8-854b690f6b79.png" width="70%" align="center"><br/>
 
 그래서 정책을 바꾸기 위해서는 `OrderServiceImpl`의 코드도 변경을 해야하는 것이다. OCP 위반을 하는 것이다.
 
-<img src="/assets/img/springcore/core22.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283057-64be9fd5-655b-480e-890d-b9933bd63cf4.png" width="70%" align="center"><br/>
 
 이것을 해결하기 위해서는 우리가 처음 예상했던 것처럼 인터페이스만 의존하도록 만들어야 한다. 현재 클라이언트 코드는 인터페이스 뿐만 아니라 구체 클래스도 의존한다.
 
@@ -207,7 +207,7 @@ public class OrderServiceImpl implements OrderService{
 
 이렇게 바꾸면 인터페이스만 의존하도록 변경된 것이다. 하지만 여기서 테스트 코드를 실행해서 확인하면?
 
-<img src="/assets/img/springcore/core23.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283058-b5e43f17-84cf-4ec5-9ce4-7d22157900f7.png" width="70%" align="center"><br/>
 
 NullPointException이 발생하는 것을 확인할 수 있다. 생각하면 당연한 것이 `discountPolicy`에 아무런 값이 할당되지 않으니 발생하는 것이다.
 
@@ -311,7 +311,7 @@ public class OrderServiceImpl implements OrderService{
 
 이제 생성자를 만들어주었다. 설계의 변경으로 더 이상 구현체에 의존을 하지 않게 되었고, 각각의 입장에서는 어떤 구현체가 들어올지 알 수 없다. 단지 실행만 되면 되는 것이다.
 
-<img src="/assets/img/springcore/core24.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283060-399a4a1f-d832-4b42-b7e0-d207d64deefd.png" width="70%" align="center"><br/>
 
 DIP가 완성되었다. `MemberServiceImpl`은 `MemberRepository`인 추상에만 의존하면 된다. 구체 클래스는 더 이상 몰라도 된다. 관심사의 분리가 이루어진 것이다.
 
@@ -373,7 +373,7 @@ public class OrderApp {
 }
 ```
 
-<img src="/assets/img/springcore/core25.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283062-ac32403d-475a-489e-b548-e16bb45f4f83.png" width="70%" align="center"><br/>
 
 둘 다 정상적으로 실행되는 것을 확인할 수 있다. 물론 여기서 끝이 아니라 테스트 코드도 수정해주자.
 
@@ -450,7 +450,7 @@ public class OrderServiceTest {
 
 `@BeforeEach`는 테스트 코드가 실행되기 전에 먼저 호출된다. 수정을 하고 난 후 실행해보면 정상적으로 작동하는 것을 확인할 수 있다.
 
-<img src="/assets/img/springcore/core26.png" width="70%" align="center"><br/>
+<img src="https://user-images.githubusercontent.com/39683512/160283063-f73088f4-d36f-4378-9ebf-af31c1041314.png" width="70%" align="center"><br/>
 
 ---
 

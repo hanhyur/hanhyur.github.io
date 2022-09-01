@@ -61,7 +61,7 @@ key = ${random.*}
 
 `random.*`에서 *로 올 수 있는 값들은 다음과 같다. 단, int 값의 value와 MAX 값을 사용할 때는 공백이 들어가서는 안된다.
 
-<img src="/assets/img/study/ex06.png" width="70%" heigth="auto"align="center"><br/>
+<img src="/assets/img/study/ex06.png" width="70%" heigth="auto" align="center"><br/>
 
 properties에 한 번 정의된 값은 재사용할 수 있다. 이런 것을 place holder라고 한다.
 

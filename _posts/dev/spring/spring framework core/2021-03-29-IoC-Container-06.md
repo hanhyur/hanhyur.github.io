@@ -195,7 +195,7 @@ public class TestBookRepository implements BookRepository {
 
 + !(not)
 + &(and)
-+ |(or)
++ \|(or)
 
 로 다음과 같이 사용할 수 있다. 이런 식으로 사용이 가능하다는 정도만 알아두자.
 

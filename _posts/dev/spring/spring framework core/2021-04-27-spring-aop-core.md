@@ -18,7 +18,7 @@ comments: true
 
 &nbsp;&nbsp;&nbsp;<b>AOP</b>란 <b>Aspect-oriented Programming</b>의 약어로 스프링 AOP는 AOP의 구현체를 제공하며, 자바에 만들어져 있는 프레임워크 <b>AspectJ</b>[^1]라는 또 다른 구현체와 연동해서 사용할 수 있는 기능을 제공한다. 이러한 기능을 기반으로 스프링 트랜잭션과 같은 다른 기능이 적용되고 있다.
 
-그렇다면 AOP는 정확히 무엇일까? AOP, 관점 지향 프로그래밍은 흩어진 Aspect를 모듈화 할 수 있는 프로그래밍 기법을 말한다. 관점 지향은 어떤 로직을 기준으로 핵심적인 관점, 부가적인 괌점으로 나누어 본다는 말이고 따라서 관점을 기준으로 각각 모듈화하는 프로그래밍 기법인 것이다. <b>OOP(Object-oriented Programming, 객체 지향 프로그래밍)</b>과 나란히 하는, 서로 보완관계에 있는 기술이다.
+그렇다면 AOP는 정확히 무엇일까? AOP, 관점 지향 프로그래밍은 흩어진 Aspect를 모듈화 할 수 있는 프로그래밍 기법을 말한다. 관점 지향은 어떤 로직을 기준으로 핵심적인 관점, 부가적인 관점으로 나누어 본다는 말이고 따라서 관점을 기준으로 각각 모듈화하는 프로그래밍 기법인 것이다. <b>OOP(Object-oriented Programming, 객체 지향 프로그래밍)</b>과 나란히 하는, 서로 보완관계에 있는 기술이다.
 
 &nbsp;&nbsp;&nbsp;AOP에 대한 내용을 그림을 보면서 알아보자.
 
@@ -298,7 +298,7 @@ public class ProxySEService implements EventService {
 
 `@Primary`는 같은 타입의 빈이 여러가지일 때 그 중 하나를 선택하여 사용하는 애노테이션이다.
 
-`@Autowired`는 이론적으로 인터페이스 타입의 빈을 받는 것이 추천된다. 하지만 여기서 Proxy의 경우 Real Subject의 빈을 주입받아서 사용해야하기 떄문에 해당 타입인 SimpleEventService를 명시해주면 주입받아 사용할 수 있다. 또는 EventService 타입을 받지만 빈의 이름(simpleEventService)에 기반해서 주입받아도 상관은 없다.
+`@Autowired`는 이론적으로 인터페이스 타입의 빈을 받는 것이 추천된다. 하지만 여기서 Proxy의 경우 Real Subject의 빈을 주입받아서 사용해야하기 때문에 해당 타입인 SimpleEventService를 명시해주면 주입받아 사용할 수 있다. 또는 EventService 타입을 받지만 빈의 이름(simpleEventService)에 기반해서 주입받아도 상관은 없다.
 
 성능을 테스트하고 싶은 두 개에만 코드를 추가했다. 이렇게 코드를 완성하면 Proxy가 Real Subject를 가지고 있고, Real Subject에 일을 위임해서 대신 처리하고, 부가적인 기능들은 가지고 있다.
 

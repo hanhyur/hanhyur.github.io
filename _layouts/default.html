@@ -1,38 +1,55 @@
 <!DOCTYPE html>
-<html lang="{{ page.lang | default: site.lang | default: 'en' }}">
+<html lang="{{ page.lang | default: site.lang | default: "ko" }}">
 
 {%- include head.html -%}
+    <meta property="og:image" content="https://t1.daumcdn.net/cfile/tistory/2237674457FB7EA215">
+<body>
 
-<body class="{% if site.darkmode == true and site.darkmode != 'never' %}dark{% endif %}">
+    {%- include header.html -%}
 
-  {%- include header.html -%}
+    <main class="page-content" aria-label="Content">
+        <div class="wrapper">
 
-  <main class="page-content" aria-label="Content">
-    <div class="wrapper">
+            {%- include about.html -%}
 
-      {%- if jekyll.environment == 'production' and site.gtm -%}
-        {%- include gtm_body.html -%}
-      {%- endif -%}
+            {%- if site.data.experience.size > 0 -%}
+                {%- include experience.html -%}
+            {%- endif -%}
 
-      {%- include about.html -%}
+            {%- if site.data.projects.size > 0 -%}
+                {%- include projects.html -%}
+            {%- endif -%}
 
-      {%- if site.version == 2 -%}
-        {% for section in site.content %}
-          <div class="container {{ section.layout }}-container">
-            <h3 id="{{ section.title | slugify }}">{{ section.title }}</h3>
-            {% include {{ section.layout | prepend: "section-" | append: ".html" }} content=section.content %}
-          </div>
-        {% endfor %}
-      {% else %}
-        {%- include v1/default.html -%}
-      {%- endif -%}
-    </div>
-  </main>
+            {%- if site.data.skill.size > 0 -%}
+                {%- include skill.html -%}
+            {%- endif -%}
 
-  {%- include footer.html -%}
-  {% if site.darkmode == false %}
-    <script src="{{ '/assets/js/index.js' | relative_url }}"></script>
-  {% endif %}
+            {%- if site.data.opensource.size > 0 -%}
+                {%- include opensource.html -%}
+            {%- endif -%}
+
+            {%- if site.data.education.size > 0 -%}
+                {%- include education.html -%}
+            {%- endif -%}
+
+            {%- include more.html -%}
+
+        </div>
+    </main>
+
+    {%- include footer.html -%}
+
+    <a href="https://github.com/sproogen/resume-theme" target="_blank">
+      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
+        alt="Fork me on GitHub">
+    </a>
+    <script src="https://utteranc.es/client.js"
+        repo="jojoldu/jojoldu.github.io"
+        issue-term="pathname"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+    </script>
 </body>
 
 </html>

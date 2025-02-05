@@ -1,0 +1,15 @@
+- layout: left
+  name: 라이브 스터디
+  dates: 2020.11 ~ 2021.03
+  quote: >
+    백기선님의 자바 라이브 스터디
+  description: | # this will include new lines to allow paragraphs
+    * 자바 기초 스터디
+- layout: left
+  name: 부경대학교
+  dates: 2012 - 2019
+  quote: >
+    전자공학과
+  description: >
+    * 학사 졸업
+    

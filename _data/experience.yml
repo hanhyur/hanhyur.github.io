@@ -1,0 +1,30 @@
+- layout: left
+  company: 무스마
+  job_title: 서버 백엔드 개발자
+  dates: 2023.03 ~ 2024.10
+  quote: >
+    IoT 기반 솔루션 서비스
+  description: | # this will include new lines to allow paragraphs
+    * 사내 서버 모니터링 & 자동화 환경 도입 (Grafana & Jenkins & GitOps)
+    * AI 데이터 활용 서비스 전체 아키텍처 및 도메인 모델 설계
+    * 실시간 모니터링 서비스 개발 및 운영
+    * Redis & RabbitMQ를 사용한 비동기 예약 서비스 개발
+    * 데이터 마이그레이션 성능 최적화
+- layout: left
+  company: 나이스데이
+  job_title: Java & Spring 백엔드 개발자(수습)
+  dates: 2022.08 ~ 2022.11
+  quote: >
+   솔루션 스타트업
+  description: | # this will include new lines to allow paragraphs
+     * 사내 프레임워크 개선
+     * 프로시저 -> Spring 서비스로 전환
+- layout: left
+  company: Wala ICT
+  job_title: 웹 개발자
+  dates: 2021.09 ~ 2022.08
+  quote: >
+   SI 스타트업
+  description: | # this will include new lines to allow paragraphs
+     * 다양한 SI 프로젝트 참여
+     * 스프링 프레임워크, MyBatis, Oracle 환경에서의 개발 경험

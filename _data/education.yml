@@ -1,15 +1,15 @@
 - layout: left
   name: 라이브 스터디
   dates: 2020.11 ~ 2021.03
+  link: https://github.com/whiteship/live-study
   quote: >
     백기선님의 자바 라이브 스터디
   description: | # this will include new lines to allow paragraphs
     * 자바 기초 스터디
+    * 주차별 목표 개인 학습 후 공유
 - layout: left
   name: 부경대학교
-  dates: 2012 - 2019
+  dates: 2012.03 - 2019.02
   quote: >
-    전자공학과
-  description: >
-    * 학사 졸업
+    전자공학과 학사 졸업
     

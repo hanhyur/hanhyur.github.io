@@ -24,32 +24,16 @@
                 {%- include skill.html -%}
             {%- endif -%}
 
-            {%- if site.data.opensource.size > 0 -%}
-                {%- include opensource.html -%}
-            {%- endif -%}
-
             {%- if site.data.education.size > 0 -%}
                 {%- include education.html -%}
             {%- endif -%}
 
-            {%- include more.html -%}
+            <!-- {%- include more.html -%} -->
 
         </div>
     </main>
 
     {%- include footer.html -%}
-
-    <a href="https://github.com/sproogen/resume-theme" target="_blank">
-      <img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png"
-        alt="Fork me on GitHub">
-    </a>
-    <script src="https://utteranc.es/client.js"
-        repo="jojoldu/jojoldu.github.io"
-        issue-term="pathname"
-        theme="github-light"
-        crossorigin="anonymous"
-        async>
-    </script>
 </body>
 
 </html>
